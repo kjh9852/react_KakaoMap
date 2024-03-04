@@ -222,7 +222,8 @@ const KakaoMap = () => {
         style={{
           // 지도의 크기
           width: "100%",
-          height: `calc(100vh - 146px)`,
+          minHeight: `calc(100vh - 146px)`,
+          height: "auto",
         }}
         level={3} // 지도의 확대 레벨
         onDragEnd={(map) => onDragMap(map)}
