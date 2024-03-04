@@ -72,7 +72,7 @@ const KakaoMap = () => {
   const openListHandler = () => {
     setOpenModal((prev) => !prev)
   };
-
+  console.log(openModal);
   const onDragMap = (map) => {
     const latlng = map.getCenter();
     setLocation({
@@ -243,7 +243,7 @@ const KakaoMap = () => {
             )}
           </MapMarker>
         ))}
-        {openModal && <Modal info={info} onMoveLocation={onMoveLocation} /> }
+        <Modal openModal={openModal} info={info} onMoveLocation={onMoveLocation} />
         <ZoomControl />
       </Map>
       <MobileNavigation openListHandler={openListHandler} />

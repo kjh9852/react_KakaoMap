@@ -19,14 +19,14 @@ const Modal = (props) => {
       <div className={styles.tabBar}></div>
       <div  
         style={{
-          ...props.info.length > 1 ? {marginTop: '1rem'} : {marginTop: 'none'},
+          ...props.openModal ? {marginTop: '1rem'} : {marginTop: '0'},
           minHeight: "24px",
           maxHeight: "20rem",
           overflow: "hidden",
           overflowY: "scroll",
         }}
       >
-        {props.info.map((data) => (
+        {props.openModal && props.info.map((data) => (
           <MapList
             onMoveLocaiton={props.onMoveLocation.bind(null, data)}
             key={data.id}
