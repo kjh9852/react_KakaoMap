@@ -1,0 +1,29 @@
+.container {
+
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: 56px;
+}
+
+.nav li {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex: 2 0;
+    cursor: pointer;
+}
+
+.nav li img {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.nav li span {
+    font-weight: normal;
+    font-size: 0.875rem;
+}
