@@ -13,13 +13,13 @@ const Modal = (props) => {
         bottom: "56px",
         borderRadius: "10px 10px 0 0",
         borderBottom: "1px solid #ededed",
-        zIndex: "1",
+        zIndex: "2",
       }}
     >
       <div className={styles.tabBar}></div>
       <div  
         style={{
-          ...props.openModal ? {marginTop: '1rem'} : {marginTop: '0'},
+          ...props.openModal && props.info.length > 1 ? {marginTop: '1rem'} : {marginTop: '0'},
           minHeight: "24px",
           maxHeight: "20rem",
           overflow: "hidden",
