@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/react_KakaoMap/static/css/main.586e1243.css",
+    "main.js": "/react_KakaoMap/static/js/main.97c43da7.js",
+    "static/js/592.8d9d0e74.chunk.js": "/react_KakaoMap/static/js/592.8d9d0e74.chunk.js",
+    "index.html": "/react_KakaoMap/index.html",
+    "main.586e1243.css.map": "/react_KakaoMap/static/css/main.586e1243.css.map",
+    "main.97c43da7.js.map": "/react_KakaoMap/static/js/main.97c43da7.js.map",
+    "592.8d9d0e74.chunk.js.map": "/react_KakaoMap/static/js/592.8d9d0e74.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.586e1243.css",
+    "static/js/main.97c43da7.js"
+  ]
+}
