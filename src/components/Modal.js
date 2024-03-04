@@ -1,4 +1,5 @@
 import MapList from "./MapList";
+import styles from './Modal.module.css';
 
 const Modal = (props) => {
   return (
@@ -9,27 +10,16 @@ const Modal = (props) => {
         minHeight: "24px",
         overflow: "hidden",
         position: "absolute",
-        padding: "24px 0",
         bottom: "56px",
         borderRadius: "10px 10px 0 0",
         borderBottom: "1px solid #ededed",
         zIndex: "1",
       }}
     >
-      <div
+      <div className={styles.tabBar}></div>
+      <div  
         style={{
-          background: "#d9d9d9",
-          width: "40px",
-          height: "3px",
-          borderRadius: "10px",
-          position: "absolute",
-          top: "8px",
-          left: "50%",
-          translate: '-50%',
-        }}
-      ></div>
-      <div
-        style={{
+          ...props.info.length > 1 ? {marginTop: '1rem'} : {marginTop: 'none'},
           minHeight: "24px",
           maxHeight: "20rem",
           overflow: "hidden",
