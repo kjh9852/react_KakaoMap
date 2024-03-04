@@ -9,7 +9,7 @@ const Modal = (props) => {
         width: "100%",
         minHeight: "24px",
         overflow: "hidden",
-        position: "absolute",
+        position: "fixed",
         bottom: "56px",
         borderRadius: "10px 10px 0 0",
         borderBottom: "1px solid #ededed",
