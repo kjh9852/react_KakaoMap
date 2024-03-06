@@ -12,7 +12,7 @@ const MobileNavigation = (props) => {
                         <img src={list} alt="list"/>
                         <span>List</span>
                     </li>
-                    <li>
+                    <li onClick={props.openFavoritHandler}>
                         <img src={star} alt="favorite"/>
                         <span>Favorite</span>
                     </li>

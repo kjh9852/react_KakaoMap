@@ -1,11 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { Map, MapMarker, ZoomControl } from "react-kakao-maps-sdk";
 import useGeolocation from "react-hook-geolocation";
+import MapContext from "../store/map-context";
 import SearchForm from "./SearchForm";
 import MapList from "./MapList";
-import styles from './KakaoMap.module.css'
+import styles from "./KakaoMap.module.css";
 import MobileNavigation from "./MobileNavigation";
-import Modal from './Modal'
+import Modal from "./Modal";
+import FavoriteList from "./FavoriteList";
+import SearchList from "./SearchList";
 
 const KakaoMap = () => {
   const { kakao } = window;
@@ -16,6 +19,8 @@ const KakaoMap = () => {
     timeout: 27000, //위치를 반환할 때 소모 할 수 있는 최대 시간
   });
 
+  const mapCtx = useContext(MapContext);
+
   const [searchKeyWord, setSearchKeyWord] = useState(null);
   const [searchLocation, setSearchLocation] = useState(null);
 
@@ -25,6 +30,7 @@ const KakaoMap = () => {
   const [name, setName] = useState();
   const [map, setMap] = useState();
   const [openModal, setOpenModal] = useState(false);
+  const [openFavorite, setOpenFavorite] = useState(false);
 
   const [location, setLocation] = useState({
     // 위치 기본 값
@@ -69,8 +75,14 @@ const KakaoMap = () => {
     setIsOpen((prev) => !prev);
   };
 
+  const openFavoritHandler = () => {
+    setOpenModal(false);
+    setOpenFavorite((prev) => !prev);
+  };
+
   const openListHandler = () => {
-    setOpenModal((prev) => !prev)
+    setOpenFavorite(false);
+    setOpenModal((prev) => !prev);
   };
   console.log(openModal);
   const onDragMap = (map) => {
@@ -81,9 +93,9 @@ const KakaoMap = () => {
         lng: latlng.getLng(),
       },
       isPanto: false,
-    })
-    setSearchKeyWord(null)
-    setSearchLocation(null)
+    });
+    setSearchKeyWord(null);
+    setSearchLocation(null);
   };
 
   const onNowLocation = () => {
@@ -91,11 +103,11 @@ const KakaoMap = () => {
       ...prev,
       center: {
         lat: geolocation.latitude,
-        lng: geolocation.longitude
+        lng: geolocation.longitude,
       },
       isPanto: true,
-    }))
-  }
+    }));
+  };
 
   useEffect(() => {
     const geocoder = new kakao.maps.services.Geocoder();
@@ -154,7 +166,7 @@ const KakaoMap = () => {
               lng: result[key].x,
             },
             categoryName: result[key].category_name,
-            category: result[key].category
+            category: result[key].category,
           });
           setInfo(infoArray);
         }
@@ -163,12 +175,12 @@ const KakaoMap = () => {
 
     if (searchKeyWord !== null) {
       places.keywordSearch(searchKeyWord, callback, defaultOptions);
-      setOpenModal(true)
+      setOpenModal(true);
     }
 
     if (searchLocation !== null) {
       geocoder.addressSearch(searchLocation, callback);
-      setOpenModal(true)
+      setOpenModal(true);
     }
   }, [searchKeyWord, searchLocation]);
 
@@ -178,7 +190,7 @@ const KakaoMap = () => {
       // GeoLocation을 이용해서 접속 위치를 얻어옵니다
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          console.log(position)
+          console.log(position);
           setLocation((prev) => ({
             ...prev,
             center: {
@@ -186,23 +198,23 @@ const KakaoMap = () => {
               lng: position.coords.longitude, // 경도
             },
             isLoading: false,
-          }))
+          }));
         },
         (err) => {
           setLocation((prev) => ({
             ...prev,
             errMsg: err.message,
             isLoading: false,
-          }))
+          }));
         }
-      )
+      );
     } else {
       // HTML5의 GeoLocation을 사용할 수 없을때 마커 표시 위치와 인포윈도우 내용을 설정합니다
       setLocation((prev) => ({
         ...prev,
         errMsg: "geolocation을 사용할수 없어요..",
         isLoading: false,
-      }))
+      }));
     }
   }, []);
 
@@ -213,8 +225,7 @@ const KakaoMap = () => {
         onKeyword={keyWordHandler}
         onGeoLocation={geoLocationHandler}
       />
-      <div>
-      </div>
+      <div></div>
       <Map // 지도를 표시할 Container
         id="map"
         isPanto={location.isPanto}
@@ -239,14 +250,21 @@ const KakaoMap = () => {
             position={data.position}
           >
             {isOpen && name && name.name === data.name && (
-              <div className={styles.markerInfo}>{data.name ? data.name : data.address}</div>
+              <div className={styles.markerInfo}>
+                {data.name ? data.name : data.address}
+              </div>
             )}
           </MapMarker>
         ))}
-        <Modal openModal={openModal} info={info} onMoveLocation={onMoveLocation} />
+        <SearchList
+          openModal={openModal}
+          list={info}
+          onMoveLocation={onMoveLocation}
+        />
+        <FavoriteList openModal={openFavorite} list={mapCtx.lists} />
         <ZoomControl />
       </Map>
-      <MobileNavigation openListHandler={openListHandler} />
+      <MobileNavigation openListHandler={openListHandler} openFavoritHandler={openFavoritHandler} />
     </>
   );
 };

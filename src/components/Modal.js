@@ -4,13 +4,13 @@ import styles from './Modal.module.css';
 
 const Modal = (props) => {
   const [touchPosition, setTouchPosition] = useState();
+
   const touchHandler = (e) => {
     setTouchPosition(e.changedTouches[0].pageY);
   };
-  console.log(touchPosition);
+
   return (
     <div
-      onTouchMove={touchHandler}
       style={{
         background: "#ffffff",
         width: "100%",
@@ -28,24 +28,14 @@ const Modal = (props) => {
       <div className={styles.tabBar}></div>
       <div
         style={{
-          ...props.openModal && props.info.length > 1 ? {marginTop: '1rem', maxHeight: '20rem'} : {marginTop: '0',maxHeight: '0rem'},
-          height: touchPosition,
+          ...props.openModal && props.list.length >= 1 ? {marginTop: '1rem', maxHeight: '20rem'} : {marginTop: '0',maxHeight: '0'},
+          height: "auto",
           overflow: "hidden",
           overflowY: "scroll",
           transition: "all 0.5s ease"
         }}
       >
-        {props.info.map((data) => (
-          <MapList
-            onMoveLocaiton={props.onMoveLocation.bind(null, data)}
-            key={data.id}
-            center={data.center}
-            address={data.address}
-            name={data.name}
-            phone={data.phone}
-            categoryName={data.categoryName}
-          />
-        ))}
+        {props.children}
       </div>
     </div>
   );
