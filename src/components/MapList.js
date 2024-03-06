@@ -4,7 +4,6 @@ import styles from './MapList.module.css'
 
 const MapList = (props) => {
     const mapCtx = useContext(MapContext);
-    console.log(mapCtx);
     const addFavoriteHandler = () => {
         mapCtx.addList({
             id:props.id,
@@ -22,7 +21,7 @@ const MapList = (props) => {
             <p>{props.phone}</p>
             <p>{props.categoryName}</p>
             <div>
-                <button onClick={addFavoriteHandler}>Favorite</button>
+                <button onClick={props.toggleHandler}>Favorite</button>
             </div>
         </div>
     )

@@ -233,7 +233,7 @@ const KakaoMap = () => {
         style={{
           // 지도의 크기
           width: "100%",
-          minHeight: `calc(100vh - 171px)`,
+          minHeight: `calc(100vh - 146px)`,
           height: "auto",
         }}
         level={3} // 지도의 확대 레벨
@@ -258,13 +258,17 @@ const KakaoMap = () => {
         ))}
         <SearchList
           openModal={openModal}
+          anotherOpen={openFavorite}
           list={info}
           onMoveLocation={onMoveLocation}
         />
-        <FavoriteList openModal={openFavorite} list={mapCtx.lists} />
+        <FavoriteList anotherOpen={openModal} openModal={openFavorite} list={mapCtx.lists} />
         <ZoomControl />
       </Map>
-      <MobileNavigation openListHandler={openListHandler} openFavoritHandler={openFavoritHandler} />
+      <MobileNavigation
+        openListHandler={openListHandler}
+        openFavoritHandler={openFavoritHandler}
+      />
     </>
   );
 };
