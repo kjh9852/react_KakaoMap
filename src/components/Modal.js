@@ -24,7 +24,7 @@ const Modal = (props) => {
             borderRadius: "10px 10px 0 0",
             borderBottom: "1px solid #ededed",
             transition: "all 1s ease",
-            zIndex: "2",
+            zIndex: "99",
           }}
         >
           <div className={styles.tabBar}></div>

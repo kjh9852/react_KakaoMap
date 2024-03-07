@@ -234,7 +234,7 @@ const KakaoMap = () => {
           // 지도의 크기
           width: "100%",
           minHeight: `calc(100vh - 146px)`,
-          height: "auto",
+          height: 'auto',
         }}
         level={3} // 지도의 확대 레벨
         onDragEnd={(map) => onDragMap(map)}
@@ -262,7 +262,11 @@ const KakaoMap = () => {
           list={info}
           onMoveLocation={onMoveLocation}
         />
-        <FavoriteList anotherOpen={openModal} openModal={openFavorite} list={mapCtx.lists} />
+        <FavoriteList
+          anotherOpen={openModal}
+          openModal={openFavorite}
+          list={mapCtx.lists}
+        />
         <ZoomControl />
       </Map>
       <MobileNavigation
