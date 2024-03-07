@@ -4,26 +4,32 @@ import MapList from "./MapList";
 import Modal from "./Modal";
 
 const FavoriteList = (props) => {
+  const mapCtx = useContext(MapContext);
 
-    const mapCtx = useContext(MapContext);
-
-    const removeFavoriteHandler = (id) => {
-        mapCtx.removeList(id)
-    };
+  const removeFavoriteHandler = (id) => {
+    mapCtx.removeList(id);
+  };
 
   return (
-    <Modal anotherOpen={props.anotherOpen} openModal={props.openModal} list={props.list}>
-      {props.list.map((data) => (
-        <MapList
-          id={data.id}
-          name={data.name}
-          address={data.address}
-          categoryName={data.categoryName}
-          phone={data.phone}
-          toggleHandler={removeFavoriteHandler.bind(null, data.id)}
-        />
-      ))}
-    </Modal>
+    <>
+      {!props.openMenu && (
+        <Modal openModal={props.openModal} list={props.list}>
+          {props.list.map((data) => (
+            <MapList
+              id={data.id}
+              onMoveLocaiton={props.onMoveLocation.bind(null, data)}
+              ket={data.id}
+              center={data.center}
+              name={data.name}
+              address={data.address}
+              categoryName={data.categoryName}
+              phone={data.phone}
+              toggleHandler={removeFavoriteHandler.bind(null, data.id)}
+            />
+          ))}
+        </Modal>
+      )}
+    </>
   );
 };
 

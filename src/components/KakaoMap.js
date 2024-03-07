@@ -31,6 +31,7 @@ const KakaoMap = () => {
   const [map, setMap] = useState();
   const [openModal, setOpenModal] = useState(false);
   const [openFavorite, setOpenFavorite] = useState(false);
+  const [openMenu ,setOpenMenu] = useState(false);
 
   const [location, setLocation] = useState({
     // 위치 기본 값
@@ -84,7 +85,7 @@ const KakaoMap = () => {
     setOpenFavorite(false);
     setOpenModal((prev) => !prev);
   };
-  console.log(openModal);
+
   const onDragMap = (map) => {
     const latlng = map.getCenter();
     setLocation({
@@ -124,7 +125,6 @@ const KakaoMap = () => {
       sort: kakao.maps.services.SortBy.ACCURACY,
     };
     // 검색 엔진 사용시 기본 옵션(현재 위치 기반)
-
     const callback = (result, status) => {
       const infoArray = [];
       const markers = [];
@@ -218,6 +218,8 @@ const KakaoMap = () => {
     }
   }, []);
 
+  let lists;
+
   return (
     <div style={{height : '100%'}}>
       <SearchForm
@@ -254,17 +256,18 @@ const KakaoMap = () => {
             )}
           </MapMarker>
         ))}
-        <SearchList
+        {(!openFavorite && info.length >= 1) && <SearchList
           openModal={openModal}
-          anotherOpen={openFavorite}
+          openMenu={openFavorite}
           list={info}
           onMoveLocation={onMoveLocation}
-        />
-        <FavoriteList
-          anotherOpen={openModal}
+        />}
+        {(!openModal && mapCtx.lists.length >= 1) && <FavoriteList
+          openMenu={openModal}
           openModal={openFavorite}
           list={mapCtx.lists}
-        />
+          onMoveLocation={onMoveLocation}
+        />}
         <ZoomControl />
       </Map>
       <MobileNavigation

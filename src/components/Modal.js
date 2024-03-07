@@ -11,7 +11,6 @@ const Modal = (props) => {
 
   return (
     <>
-      {!props.anotherOpen && props.list.length >= 1 && (
         <div
           style={{
             background: "#ffffff",
@@ -24,7 +23,7 @@ const Modal = (props) => {
             borderRadius: "10px 10px 0 0",
             borderBottom: "1px solid #ededed",
             transition: "all 1s ease",
-            zIndex: "99",
+            ...(props.openModal ? {zIndex: '99'} : {zIndex: '1'}),
           }}
         >
           <div className={styles.tabBar}></div>
@@ -42,7 +41,6 @@ const Modal = (props) => {
             {props.children}
           </div>
         </div>
-      )}
     </>
   );
 };
