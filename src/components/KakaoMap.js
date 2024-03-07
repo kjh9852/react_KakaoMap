@@ -219,13 +219,12 @@ const KakaoMap = () => {
   }, []);
 
   return (
-    <>
+    <div style={{height : '100%'}}>
       <SearchForm
         onSearch={onSearch}
         onKeyword={keyWordHandler}
         onGeoLocation={geoLocationHandler}
       />
-      <div></div>
       <Map // 지도를 표시할 Container
         id="map"
         isPanto={location.isPanto}
@@ -233,8 +232,7 @@ const KakaoMap = () => {
         style={{
           // 지도의 크기
           width: "100%",
-          minHeight: `calc(100vh - 146px)`,
-          height: 'auto',
+          minHeight: 'calc(100svh - 142px)'
         }}
         level={3} // 지도의 확대 레벨
         onDragEnd={(map) => onDragMap(map)}
@@ -273,7 +271,7 @@ const KakaoMap = () => {
         openListHandler={openListHandler}
         openFavoritHandler={openFavoritHandler}
       />
-    </>
+    </div>
   );
 };
 
