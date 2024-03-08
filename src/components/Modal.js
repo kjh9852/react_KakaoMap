@@ -29,8 +29,8 @@ const Modal = (props) => {
           <div className={styles.tabBar}></div>
           <div
             style={{
-              ...(props.openModal && props.list.length >= 1
-                ? { marginTop: "1rem", maxHeight: "20rem" }
+              ...(props.openModal
+                ? { marginTop: "1.5rem", maxHeight: "20rem" }
                 : { marginTop: "0", maxHeight: "0" }),
               height: "auto",
               overflow: "hidden",

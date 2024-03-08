@@ -9,6 +9,7 @@ import MobileNavigation from "./MobileNavigation";
 import Modal from "./Modal";
 import FavoriteList from "./FavoriteList";
 import SearchList from "./SearchList";
+import CategoryList from "./CategoryList";
 
 const KakaoMap = () => {
   const { kakao } = window;
@@ -23,6 +24,7 @@ const KakaoMap = () => {
 
   const [searchKeyWord, setSearchKeyWord] = useState(null);
   const [searchLocation, setSearchLocation] = useState(null);
+  const [onCategory, setOnCategory] = useState(null);
 
   const [info, setInfo] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -32,7 +34,7 @@ const KakaoMap = () => {
   const [openModal, setOpenModal] = useState(false);
   const [openFavorite, setOpenFavorite] = useState(false);
   const [openMenu ,setOpenMenu] = useState(false);
-
+  
   const [location, setLocation] = useState({
     // 위치 기본 값
     center: {
@@ -81,9 +83,17 @@ const KakaoMap = () => {
     setOpenFavorite((prev) => !prev);
   };
 
+  const openCategoryHandler = () => {
+    setOpenMenu((prev) => !prev);
+  };
+
   const openListHandler = () => {
     setOpenFavorite(false);
     setOpenModal((prev) => !prev);
+  };
+
+  const onCategoryHandler = (data) => {
+    setOnCategory(data);
   };
 
   const onDragMap = (map) => {
@@ -113,9 +123,9 @@ const KakaoMap = () => {
   useEffect(() => {
     const geocoder = new kakao.maps.services.Geocoder();
     // 지역검색
-
     const places = new kakao.maps.services.Places();
     // 키워드 검색
+    const categorys = new kakao.maps.services.Places();
 
     const defaultOptions = {
       x: geolocation.longitude,
@@ -177,12 +187,16 @@ const KakaoMap = () => {
       places.keywordSearch(searchKeyWord, callback, defaultOptions);
       setOpenModal(true);
     }
+    
+    if (onCategory !== null) {
+      categorys.categorySearch(onCategory, callback, defaultOptions, {useMapBounds:true}); 
+    }
 
     if (searchLocation !== null) {
       geocoder.addressSearch(searchLocation, callback);
       setOpenModal(true);
     }
-  }, [searchKeyWord, searchLocation]);
+  }, [searchKeyWord, searchLocation, onCategory]);
 
   useEffect(() => {
     //현재 위치로 초기화
@@ -256,6 +270,7 @@ const KakaoMap = () => {
             )}
           </MapMarker>
         ))}
+        <CategoryList openMenu={openMenu} onCategory={onCategoryHandler}/>
         {(!openFavorite && info.length >= 1) && <SearchList
           openModal={openModal}
           openMenu={openFavorite}
@@ -271,8 +286,9 @@ const KakaoMap = () => {
         <ZoomControl />
       </Map>
       <MobileNavigation
-        openListHandler={openListHandler}
-        openFavoritHandler={openFavoritHandler}
+        openList={openListHandler}
+        openFavorite={openFavoritHandler}
+        openCategory={openCategoryHandler}
       />
     </div>
   );
