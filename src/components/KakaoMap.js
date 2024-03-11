@@ -36,7 +36,6 @@ const KakaoMap = () => {
   const [openMenu ,setOpenMenu] = useState(false);
   
   const [location, setLocation] = useState({
-    // 위치 기본 값
     center: {
       lat: null,
       lng: null,
@@ -45,14 +44,17 @@ const KakaoMap = () => {
     errMsg: null,
     isLoading: true,
   });
+  // 최초 위치 deafault 값
 
   const geoLocationHandler = (value) => {
     setSearchLocation(value);
   };
+  // 장소 검색 저장
 
   const keyWordHandler = (value) => {
     setSearchKeyWord(value);
   };
+  // 키워드 저장
 
   const onMoveLocation = (data) => {
     setLocation({
@@ -60,6 +62,7 @@ const KakaoMap = () => {
       isPanto: true,
     });
   };
+  // 검색 리스트에 있는 장소 클릭 시 위치 이동
 
   const onSearch = (data) => {
     setLocation({
@@ -68,33 +71,42 @@ const KakaoMap = () => {
     });
     setPositions(data);
   };
+  // 검색 시 상단 리스트에 있는 위치 저장
 
   const onMarkersHandler = (data) => {
     setIsOpen((prev) => !prev);
     setName(data);
   };
+  // 마우스 오버시 마커 인포 보이기
 
   const onMouseOut = () => {
     setIsOpen((prev) => !prev);
   };
+  // 마우스 아웃시 마커 숨김
 
   const openFavoritHandler = () => {
     setOpenModal(false);
     setOpenFavorite((prev) => !prev);
   };
+  // 즐겨찾기 리스트 오픈 핸들러
 
   const openCategoryHandler = () => {
     setOpenMenu((prev) => !prev);
   };
+  // 카테고리 리스트 오픈 핸들러
 
   const openListHandler = () => {
     setOpenFavorite(false);
     setOpenModal((prev) => !prev);
   };
+  // 검색 리스트 오픈 핸들러
 
   const onCategoryHandler = (data) => {
     setOnCategory(data);
+    setSearchKeyWord(null);
+    setSearchLocation(null);
   };
+  // 카테고리 클릭 핸들러
 
   const onDragMap = (map) => {
     const latlng = map.getCenter();
@@ -108,6 +120,7 @@ const KakaoMap = () => {
     setSearchKeyWord(null);
     setSearchLocation(null);
   };
+  // 지도 드래그 할 시 위치 변경
 
   const onNowLocation = () => {
     setLocation((prev) => ({
@@ -119,6 +132,7 @@ const KakaoMap = () => {
       isPanto: true,
     }));
   };
+  // 현재 위치 저장
 
   useEffect(() => {
     const geocoder = new kakao.maps.services.Geocoder();
@@ -138,7 +152,8 @@ const KakaoMap = () => {
     const callback = (result, status) => {
       const infoArray = [];
       const markers = [];
-
+      //  초기화
+      
       if (status === kakao.maps.services.Status.OK) {
         const bounds = new kakao.maps.LatLngBounds();
 
@@ -163,25 +178,54 @@ const KakaoMap = () => {
           bounds.extend(new kakao.maps.LatLng(result[i].y, result[i].x));
         }
         setPositions(markers);
+        // 검색, 카테고리 클릭 시 마커 표시
 
-        for (const key in result) {
-          infoArray.push({
-            id: key,
-            address: result[key].address_name,
-            name: result[key].place_name,
-            road_name: result[key].road_address_name,
-            phone: result[key].phone,
-            center: {
-              lat: result[key].y,
-              lng: result[key].x,
-            },
-            categoryName: result[key].category_name,
-            category: result[key].category,
-          });
-          setInfo(infoArray);
+        if (searchKeyWord) {
+          for (const key in result) {
+            setInfo([]);
+            infoArray.push({
+              id: key,
+              address: result[key].address_name,
+              name: result[key].place_name,
+              road_name: result[key].road_address_name,
+              phone: result[key].phone,
+              center: {
+                lat: result[key].y,
+                lng: result[key].x,
+              },
+              categoryName: result[key].category_name,
+              category: result[key].category,
+            });
+            setInfo(infoArray);
+          }
+          // 키워드 검색 시 리스트에 정보 저장
+          return;
+        } 
+
+        if (onCategory) {
+          for (const key in result) {
+            setInfo([]);
+            infoArray.push({
+              id: key,
+              address: result[key].address_name,
+              name: result[key].place_name,
+              road_name: result[key].road_address_name,
+              phone: result[key].phone,
+              center: {
+                lat: result[key].y,
+                lng: result[key].x,
+              },
+              categoryName: result[key].category_name,
+              category: result[key].category,
+            });
+            setInfo(infoArray);
+          }
+          // 카테고리 클릭 시 리스트에 정보 저장
         }
+        return;
       }
     };
+    console.log(info);
 
     if (searchKeyWord !== null) {
       places.keywordSearch(searchKeyWord, callback, defaultOptions);

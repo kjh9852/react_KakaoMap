@@ -5,3 +5,13 @@
 .list {
     
 }
+
+.btn {
+    border: none;
+    background: none;
+}
+
+.btn img {
+    width: 20px;
+    height: 20px;
+}

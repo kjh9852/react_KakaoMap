@@ -1,9 +1,10 @@
-import React, { useReducer } from "react";
+import React, { useReducer ,useState } from "react";
 
 const MapContext = React.createContext({
   lists: [],
   addList: (list) => {},
   removeList: (id) => {},
+  isActive: (id) => {},
 });
 
 const defaultState = {
@@ -12,6 +13,8 @@ const defaultState = {
 
 const listReducer = (state, action) => {
   let updatedLists;
+  let activeItem;
+
   if (action.type === "ADD") {
     const existingListIndex = state.lists.findIndex(
       (list) => list.id === action.list.id
@@ -19,12 +22,11 @@ const listReducer = (state, action) => {
     const existingListData = state.lists[existingListIndex];
     // lists에 인덱스 값 삽입
     if(existingListData) { // 중복된 인덱스 일 떄
-        updatedLists = [...state.lists];
+        updatedLists = [...state.lists, {activeItem: true}];
     } else {
         updatedLists = state.lists.concat(action.list);
         // lists 배열에 현재 누른 데이터 삽입
     }
-
     return {
       lists: updatedLists,
     };
