@@ -25,6 +25,7 @@ const FavoriteList = (props) => {
               categoryName={data.categoryName}
               phone={data.phone}
               toggleHandler={removeFavoriteHandler.bind(null, data.id)}
+              favoriteFill="#FFF500"
             />
           ))}
         </Modal>

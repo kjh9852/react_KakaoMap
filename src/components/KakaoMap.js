@@ -34,7 +34,9 @@ const KakaoMap = () => {
   const [openModal, setOpenModal] = useState(false);
   const [openFavorite, setOpenFavorite] = useState(false);
   const [openMenu ,setOpenMenu] = useState(false);
-  
+
+  const [isFavorite, setIsFavorite] = useState(false);
+
   const [location, setLocation] = useState({
     center: {
       lat: null,
@@ -195,6 +197,7 @@ const KakaoMap = () => {
               },
               categoryName: result[key].category_name,
               category: result[key].category,
+              favorite: false,
             });
             setInfo(infoArray);
           }
@@ -275,8 +278,6 @@ const KakaoMap = () => {
       }));
     }
   }, []);
-
-  let lists;
 
   return (
     <div style={{height : '100%'}}>

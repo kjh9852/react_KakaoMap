@@ -1,12 +1,12 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import Modal from "./Modal";
 import MapList from "./MapList";
 import MapContext from "../store/map-context";
 
 const SearchList = (props) => {
   const mapCtx = useContext(MapContext);
-  const [isFavorite, setIsFavorite] = useState(false);
   const [isActive, setIsActive] = useState();
+  const [isFavorite, setIsFavorite] = useState(false);
 
   const addFavoriteHandler = (data) => {
     mapCtx.addList({
@@ -18,13 +18,7 @@ const SearchList = (props) => {
       center: data.center,
       activeItem: true,
     });
-
-    setIsActive(() => {
-      return data.id;
-    })
-
   };
-
 
   return (
     <>
@@ -40,7 +34,7 @@ const SearchList = (props) => {
             phone={data.phone}
             categoryName={data.categoryName}
             toggleHandler={addFavoriteHandler.bind(null, data)}
-            activeFavorite={data.id === isActive  ? "#222222" : "#999999"}
+            favoriteFill={isFavorite ? "#FFF500" : "#ededed"}
           />
         ))}
       </Modal>
