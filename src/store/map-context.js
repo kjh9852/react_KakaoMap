@@ -5,6 +5,7 @@ const MapContext = React.createContext({
   addList: (list) => {},
   removeList: (id) => {},
   isActive: (id) => {},
+  onFavorite: () => {},
 });
 
 const defaultState = {
@@ -13,7 +14,6 @@ const defaultState = {
 
 const listReducer = (state, action) => {
   let updatedLists;
-  let activeItem;
 
   if (action.type === "ADD") {
     const existingListIndex = state.lists.findIndex(
@@ -22,7 +22,7 @@ const listReducer = (state, action) => {
     const existingListData = state.lists[existingListIndex];
     // lists에 인덱스 값 삽입
     if(existingListData) { // 중복된 인덱스 일 떄
-        updatedLists = [...state.lists, {activeItem: true}];
+        updatedLists = [...state.lists];
     } else {
         updatedLists = state.lists.concat(action.list);
         // lists 배열에 현재 누른 데이터 삽입
@@ -41,9 +41,13 @@ const listReducer = (state, action) => {
 
 export const MapContextProvider = (props) => {
   const [listState, dispatchListAction] = useReducer(listReducer, defaultState);
-
+  const [onFavorite, setOnFavorite] = useState(false);
   const addListHandler = (list) => {
     dispatchListAction({ type: "ADD", list: list });
+  };
+
+  const favoriteHanlder = () => {
+    setOnFavorite((prev) => !prev);
   };
 
   const removeListHandler = (id) => {
@@ -54,6 +58,7 @@ export const MapContextProvider = (props) => {
     lists: listState.lists,
     addList: addListHandler,
     removeList: removeListHandler,
+    onFavorite: favoriteHanlder,
   };
 
   return (

@@ -32,6 +32,7 @@ const Modal = (props) => {
               ...(props.openModal
                 ? { marginTop: "1.5rem", maxHeight: "20rem" }
                 : { marginTop: "0", maxHeight: "0" }),
+              padding: "0.75rem",
               height: "auto",
               overflow: "hidden",
               overflowY: "scroll",

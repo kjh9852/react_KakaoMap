@@ -184,7 +184,7 @@ const KakaoMap = () => {
           for (const key in result) {
             setInfo([]);
             infoArray.push({
-              id: key,
+              id: result[key].id,
               address: result[key].address_name,
               name: result[key].place_name,
               road_name: result[key].road_address_name,
@@ -206,7 +206,7 @@ const KakaoMap = () => {
           for (const key in result) {
             setInfo([]);
             infoArray.push({
-              id: key,
+              id: result[key].id,
               address: result[key].address_name,
               name: result[key].place_name,
               road_name: result[key].road_address_name,
