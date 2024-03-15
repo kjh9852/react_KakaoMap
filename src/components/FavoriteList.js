@@ -6,10 +6,6 @@ import Modal from "./Modal";
 const FavoriteList = (props) => {
   const mapCtx = useContext(MapContext);
 
-  const removeFavoriteHandler = (id) => {
-    mapCtx.removeList(id);
-  };
-
   return (
     <>
       {!props.openMenu && (
@@ -24,7 +20,7 @@ const FavoriteList = (props) => {
               address={data.address}
               categoryName={data.categoryName}
               phone={data.phone}
-              toggleHandler={removeFavoriteHandler.bind(null, data.id)}
+              toggleHandler={props.removeFavoriteHandler.bind(null, data)}
               favoriteFill="#FFF500"
             />
           ))}

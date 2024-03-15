@@ -97,7 +97,7 @@ const KakaoMap = () => {
   };
   // 카테고리 리스트 오픈 핸들러
 
-  const openListHandler = () => {
+  const openListHandler = (favoriteData) => {
     setOpenFavorite(false);
     setOpenModal((prev) => !prev);
   };
@@ -122,7 +122,7 @@ const KakaoMap = () => {
     setSearchKeyWord(null);
     setSearchLocation(null);
   };
-  // 지도 드래그 할 시 위치 변경
+  // 지도 드래그시 현재 위치 값 변경
 
   const onNowLocation = () => {
     setLocation((prev) => ({
@@ -134,7 +134,7 @@ const KakaoMap = () => {
       isPanto: true,
     }));
   };
-  // 현재 위치 저장
+  // 현재 위치 값 저장
 
   useEffect(() => {
     const geocoder = new kakao.maps.services.Geocoder();
@@ -142,6 +142,7 @@ const KakaoMap = () => {
     const places = new kakao.maps.services.Places();
     // 키워드 검색
     const categorys = new kakao.maps.services.Places();
+    // 카테고리 검색
 
     const defaultOptions = {
       x: geolocation.longitude,
@@ -150,7 +151,8 @@ const KakaoMap = () => {
       size: 15,
       sort: kakao.maps.services.SortBy.ACCURACY,
     };
-    // 검색 엔진 사용시 기본 옵션(현재 위치 기반)
+    // 검색 시 default 옵션(현재 위치 기반)
+
     const callback = (result, status) => {
       const infoArray = [];
       const markers = [];
@@ -159,7 +161,6 @@ const KakaoMap = () => {
       if (status === kakao.maps.services.Status.OK) {
         const bounds = new kakao.maps.LatLngBounds();
 
-        console.log(result);
         setLocation((prev) => ({
           ...prev,
           center: {
@@ -180,7 +181,7 @@ const KakaoMap = () => {
           bounds.extend(new kakao.maps.LatLng(result[i].y, result[i].x));
         }
         setPositions(markers);
-        // 검색, 카테고리 클릭 시 마커 표시
+        // 검색, 카테고리 사용 시 마커 표시
 
         if (searchKeyWord) {
           for (const key in result) {
@@ -201,7 +202,7 @@ const KakaoMap = () => {
             });
             setInfo(infoArray);
           }
-          // 키워드 검색 시 리스트에 정보 저장
+          // info State 초기화 후 키워드 검색 시 infoArray에 저장 후 info State에 저장
           return;
         } 
 
@@ -220,10 +221,11 @@ const KakaoMap = () => {
               },
               categoryName: result[key].category_name,
               category: result[key].category,
+              favorite: false,
             });
             setInfo(infoArray);
           }
-          // 카테고리 클릭 시 리스트에 정보 저장
+          // info State 초기화 후 카테고리 클릭 시 infoArray에 저장 후 info State에 저장
         }
         return;
       }
@@ -233,16 +235,17 @@ const KakaoMap = () => {
     if (searchKeyWord !== null) {
       places.keywordSearch(searchKeyWord, callback, defaultOptions);
       setOpenModal(true);
-    }
+    } // 키워드 검색 (키워드, 콜백함수, 기본옵션)
     
     if (onCategory !== null) {
       categorys.categorySearch(onCategory, callback, defaultOptions, {useMapBounds:true}); 
-    }
+    } // 카테고리 검색 (키워드, 콜백함수, 기본옵션, {부드럽게 이동})
 
     if (searchLocation !== null) {
       geocoder.addressSearch(searchLocation, callback);
       setOpenModal(true);
-    }
+    } // 일반 검색 (키워드, 콜백함수)
+
   }, [searchKeyWord, searchLocation, onCategory]);
 
   useEffect(() => {
@@ -278,6 +281,35 @@ const KakaoMap = () => {
       }));
     }
   }, []);
+
+  const addFavoriteHandler = (data) => {
+    mapCtx.addList({
+      id: data.id,
+      name: data.name,
+      address: data.address,
+      categoryName: data.categoryName,
+      phone: data.phone,
+      center: data.center,
+    });
+
+    const changedList = info.map((list) => {
+      if(list.id === data.id) {
+        return {...data ,favorite: true};
+      } else return list;
+    })
+    setInfo(changedList);
+  };
+
+  const removeFavoriteHandler = (data) => {
+    mapCtx.removeList(data.id);
+
+    const changedList = info.map((list) => {
+      if(list.id === data.id) {
+        return {...data ,favorite: false};
+      } else return list;
+    })
+    setInfo(changedList);
+  };
 
   return (
     <div style={{height : '100%'}}>
@@ -315,20 +347,30 @@ const KakaoMap = () => {
             )}
           </MapMarker>
         ))}
+
         <CategoryList openMenu={openMenu} onCategory={onCategoryHandler}/>
+        {/* 카테고리 리스트 */}
+
         {(!openFavorite && info.length >= 1) && <SearchList
           openModal={openModal}
           openMenu={openFavorite}
           list={info}
           onMoveLocation={onMoveLocation}
+          addFavoriteHandler={addFavoriteHandler}
         />}
+        {/* 검색 리스트 */}
+
         {(!openModal && mapCtx.lists.length >= 1) && <FavoriteList
           openMenu={openModal}
           openModal={openFavorite}
           list={mapCtx.lists}
           onMoveLocation={onMoveLocation}
+          removeFavoriteHandler={removeFavoriteHandler}
         />}
+        {/* 좋아요 리스트 */}
+
         <ZoomControl />
+        {/* 지도 줌 옵션 */}
       </Map>
       <MobileNavigation
         openList={openListHandler}
