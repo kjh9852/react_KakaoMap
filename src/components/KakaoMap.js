@@ -4,19 +4,16 @@ import {
   MapMarker,
   ZoomControl,
   CustomOverlayMap,
-  CustomOverlay1Style,
 } from "react-kakao-maps-sdk";
 import useGeolocation from "react-hook-geolocation";
 import MapContext from "../store/map-context";
 import SearchForm from "./SearchForm";
-import MapList from "./MapList";
 import styles from "./KakaoMap.module.css";
 import MobileNavigation from "./MobileNavigation";
-import Modal from "./Modal";
 import FavoriteList from "./FavoriteList";
 import SearchList from "./SearchList";
 import CategoryList from "./CategoryList";
-import category from "../Atom/Category";
+import allLocation from '../images/allLocaiton.png'
 
 const KakaoMap = () => {
   const { kakao } = window;
@@ -42,7 +39,7 @@ const KakaoMap = () => {
   const [isFavorite, setIsFavorite] = useState([]);
 
   const [markers, setMarkers] = useState({
-    src: "http://t1.daumcdn.net/mapjsapi/images/2x/marker.png",
+    src: allLocation,
     size: imageSize,
   });
 
@@ -130,7 +127,7 @@ const KakaoMap = () => {
   const onCategorySrc = (data) => {
     setMarkers((prev) => ({
       ...prev,
-      src: data ? data : "http://t1.daumcdn.net/mapjsapi/images/2x/marker.png",
+      src: data ? data : allLocation,
     }));
     console.log(markers);
   };
