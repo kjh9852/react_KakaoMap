@@ -4,7 +4,14 @@
     left: 50px;
 }
 .markerInfo {
-    font-size: 1rem;
+    padding: 0.5rem;
+    font-size: 0.75rem;
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: 0px 2px 3px 0px rgba(0,0,0, 0.15);
+}
+.markerInfo > p {
+    text-align: center;
 }
 .nowLocation {
     position: absolute;

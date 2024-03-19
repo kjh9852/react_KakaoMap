@@ -1,5 +1,11 @@
 import { useEffect, useState, useContext } from "react";
-import { Map, MapMarker, ZoomControl } from "react-kakao-maps-sdk";
+import {
+  Map,
+  MapMarker,
+  ZoomControl,
+  CustomOverlayMap,
+  CustomOverlay1Style,
+} from "react-kakao-maps-sdk";
 import useGeolocation from "react-hook-geolocation";
 import MapContext from "../store/map-context";
 import SearchForm from "./SearchForm";
@@ -10,6 +16,7 @@ import Modal from "./Modal";
 import FavoriteList from "./FavoriteList";
 import SearchList from "./SearchList";
 import CategoryList from "./CategoryList";
+import category from "../Atom/Category";
 
 const KakaoMap = () => {
   const { kakao } = window;
@@ -19,23 +26,33 @@ const KakaoMap = () => {
     maximumAge: 30000, //캐시에 저장한 위치 정보를 반환할 수 있는 최대 시간
     timeout: 27000, //위치를 반환할 때 소모 할 수 있는 최대 시간
   });
+  const imageSize = {
+    width: 29,
+    height: 42,
+  };
 
   const mapCtx = useContext(MapContext);
 
   const [searchKeyWord, setSearchKeyWord] = useState(null);
   const [searchLocation, setSearchLocation] = useState(null);
   const [onCategory, setOnCategory] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState();
 
   const [info, setInfo] = useState([]);
+  const [isFavorite, setIsFavorite] = useState([]);
+
+  const [markers, setMarkers] = useState({
+    src: "http://t1.daumcdn.net/mapjsapi/images/2x/marker.png",
+    size: imageSize,
+  });
+
   const [isOpen, setIsOpen] = useState(false);
   const [positions, setPositions] = useState([]);
   const [name, setName] = useState();
   const [map, setMap] = useState();
   const [openModal, setOpenModal] = useState(false);
   const [openFavorite, setOpenFavorite] = useState(false);
-  const [openMenu ,setOpenMenu] = useState(false);
-
-  const [isFavorite, setIsFavorite] = useState(false);
+  const [openMenu, setOpenMenu] = useState(false);
 
   const [location, setLocation] = useState({
     center: {
@@ -110,6 +127,14 @@ const KakaoMap = () => {
   };
   // 카테고리 클릭 핸들러
 
+  const onCategorySrc = (data) => {
+    setMarkers((prev) => ({
+      ...prev,
+      src: data ? data : "http://t1.daumcdn.net/mapjsapi/images/2x/marker.png",
+    }));
+    console.log(markers);
+  };
+
   const onDragMap = (map) => {
     const latlng = map.getCenter();
     setLocation({
@@ -137,6 +162,12 @@ const KakaoMap = () => {
   // 현재 위치 값 저장
 
   useEffect(() => {
+    setSelectedCategory(onCategory);
+    if (selectedCategory === onCategory) {
+    }
+  }, [onCategory, selectedCategory]);
+
+  useEffect(() => {
     const geocoder = new kakao.maps.services.Geocoder();
     // 지역검색
     const places = new kakao.maps.services.Places();
@@ -157,7 +188,7 @@ const KakaoMap = () => {
       const infoArray = [];
       const markers = [];
       //  초기화
-      
+
       if (status === kakao.maps.services.Status.OK) {
         const bounds = new kakao.maps.LatLngBounds();
 
@@ -175,6 +206,10 @@ const KakaoMap = () => {
               lat: result[i].y,
               lng: result[i].x,
             },
+            infoPosistion : {
+              lat: result[i].y,
+              lng: result[i].x,
+            },
             address: result[i].address_name,
             name: result[i].place_name ? result[i].place_name : null,
           });
@@ -185,6 +220,7 @@ const KakaoMap = () => {
 
         if (searchKeyWord) {
           for (const key in result) {
+            setOnCategory(null);
             setInfo([]);
             infoArray.push({
               id: result[key].id,
@@ -197,17 +233,18 @@ const KakaoMap = () => {
                 lng: result[key].x,
               },
               categoryName: result[key].category_name,
-              category: result[key].category,
+              category: result[key].category_group_name,
               favorite: false,
             });
             setInfo(infoArray);
           }
           // info State 초기화 후 키워드 검색 시 infoArray에 저장 후 info State에 저장
           return;
-        } 
+        }
 
         if (onCategory) {
           for (const key in result) {
+            setSearchKeyWord(null);
             setInfo([]);
             infoArray.push({
               id: result[key].id,
@@ -220,7 +257,7 @@ const KakaoMap = () => {
                 lng: result[key].x,
               },
               categoryName: result[key].category_name,
-              category: result[key].category,
+              category: result[key].category_group_name,
               favorite: false,
             });
             setInfo(infoArray);
@@ -230,22 +267,30 @@ const KakaoMap = () => {
         return;
       }
     };
-    console.log(info);
 
     if (searchKeyWord !== null) {
       places.keywordSearch(searchKeyWord, callback, defaultOptions);
       setOpenModal(true);
+      setMarkers((prev) => ({
+        ...prev,
+        src: "http://t1.daumcdn.net/mapjsapi/images/2x/marker.png",
+      }));
     } // 키워드 검색 (키워드, 콜백함수, 기본옵션)
-    
+
     if (onCategory !== null) {
-      categorys.categorySearch(onCategory, callback, defaultOptions, {useMapBounds:true}); 
+      categorys.categorySearch(onCategory, callback, defaultOptions, {
+        useMapBounds: true,
+      });
     } // 카테고리 검색 (키워드, 콜백함수, 기본옵션, {부드럽게 이동})
 
     if (searchLocation !== null) {
       geocoder.addressSearch(searchLocation, callback);
       setOpenModal(true);
+      setMarkers((prev) => ({
+        ...prev,
+        src: "http://t1.daumcdn.net/mapjsapi/images/2x/marker.png",
+      }));
     } // 일반 검색 (키워드, 콜백함수)
-
   }, [searchKeyWord, searchLocation, onCategory]);
 
   useEffect(() => {
@@ -290,29 +335,31 @@ const KakaoMap = () => {
       categoryName: data.categoryName,
       phone: data.phone,
       center: data.center,
+      favorite: true,
     });
 
     const changedList = info.map((list) => {
-      if(list.id === data.id) {
-        return {...data ,favorite: true};
+      if (list.id === data.id) {
+        return { ...data, favorite: true };
       } else return list;
-    })
+    });
     setInfo(changedList);
+    setIsFavorite(changedList);
   };
 
   const removeFavoriteHandler = (data) => {
     mapCtx.removeList(data.id);
 
     const changedList = info.map((list) => {
-      if(list.id === data.id) {
-        return {...data ,favorite: false};
+      if (list.id === data.id) {
+        return { ...data, favorite: false };
       } else return list;
-    })
+    });
     setInfo(changedList);
   };
-
+  console.log(positions);
   return (
-    <div style={{height : '100%'}}>
+    <div style={{ height: "100%" }}>
       <SearchForm
         onSearch={onSearch}
         onKeyword={keyWordHandler}
@@ -325,7 +372,7 @@ const KakaoMap = () => {
         style={{
           // 지도의 크기
           width: "100%",
-          minHeight: 'calc(100svh - 142px)'
+          minHeight: "calc(100svh - 142px)",
         }}
         level={3} // 지도의 확대 레벨
         onDragEnd={(map) => onDragMap(map)}
@@ -333,40 +380,60 @@ const KakaoMap = () => {
         <div onClick={onNowLocation} className={styles.nowLocation}>
           <button></button>
         </div>
-        {positions.map((data) => (
-          <MapMarker
-            className={styles.markerInfo}
-            onMouseOver={onMarkersHandler.bind(null, data)}
-            onMouseOut={onMouseOut}
-            position={data.position}
-          >
-            {isOpen && name && name.name === data.name && (
-              <div className={styles.markerInfo}>
-                {data.name ? data.name : data.address}
-              </div>
-            )}
-          </MapMarker>
-        ))}
+        {/* 현 위치 버튼 */}
 
-        <CategoryList openMenu={openMenu} onCategory={onCategoryHandler}/>
+        {positions.map((data) => (
+          <div>
+            <MapMarker
+              className={styles.markerInfo}
+              onMouseOver={onMarkersHandler.bind(null, data)}
+              onMouseOut={onMouseOut}
+              position={data.position}
+              image={{
+                src: markers.src,
+                size: imageSize,
+              }}
+            />
+            {isOpen && name && name.name === data.name && (
+              <CustomOverlayMap position={data.infoPosistion} yAnchor={2.3}>
+                <div className={styles.markerInfo}>
+                  <p>{data.name ? data.name : data.address}</p>
+                </div>
+              </CustomOverlayMap>
+            )}
+          </div>
+        ))}
+        {/* 맵 마커 */}
+
+        {!openModal && (
+          <CategoryList
+            openMenu={openMenu}
+            onCategory={onCategoryHandler}
+            onCategorySrc={onCategorySrc}
+          />
+        )}
         {/* 카테고리 리스트 */}
 
-        {(!openFavorite && info.length >= 1) && <SearchList
-          openModal={openModal}
-          openMenu={openFavorite}
-          list={info}
-          onMoveLocation={onMoveLocation}
-          addFavoriteHandler={addFavoriteHandler}
-        />}
+        {!openFavorite && info.length >= 1 && (
+          <SearchList
+            openModal={openModal}
+            openMenu={openFavorite}
+            list={info}
+            onMoveLocation={onMoveLocation}
+            addFavoriteHandler={addFavoriteHandler}
+          />
+        )}
         {/* 검색 리스트 */}
 
-        {(!openModal && mapCtx.lists.length >= 1) && <FavoriteList
-          openMenu={openModal}
-          openModal={openFavorite}
-          list={mapCtx.lists}
-          onMoveLocation={onMoveLocation}
-          removeFavoriteHandler={removeFavoriteHandler}
-        />}
+        {!openModal && mapCtx.lists.length >= 1 && (
+          <FavoriteList
+            openMenu={openModal}
+            openModal={openFavorite}
+            list={mapCtx.lists}
+            onMoveLocation={onMoveLocation}
+            removeFavoriteHandler={removeFavoriteHandler}
+          />
+        )}
         {/* 좋아요 리스트 */}
 
         <ZoomControl />

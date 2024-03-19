@@ -9,17 +9,18 @@ const CategoryList = (props) => {
 
   const onCategoryHandler = (data) => {
     setIsActive(() => {
-      return data;
+      return data.code;
     });
     if(data === isActive) {
       setIsActive('');
     }
-    props.onCategory(data);
+    props.onCategory(data.code);
+    props.onCategorySrc(data.src);
   };
 
   const list = category.map((data) => (
     <li
-      onClick={onCategoryHandler.bind(null, data.code)}
+      onClick={onCategoryHandler.bind(null, data)}
       className={`${styles.category_list} ${data.code === isActive ? styles.active : ''}`}
       key={data.code}
       code={data.code}

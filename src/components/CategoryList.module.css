@@ -2,9 +2,9 @@
     width: 100%;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem 0px;
+    gap: 0.75rem 0.75rem;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: center;
     padding: 1rem 1.625rem;
 }
 
