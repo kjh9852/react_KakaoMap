@@ -24,8 +24,8 @@ const KakaoMap = () => {
     timeout: 27000, //위치를 반환할 때 소모 할 수 있는 최대 시간
   });
   const imageSize = {
-    width: 29,
-    height: 42,
+    width: 24,
+    height: 34,
   };
 
   const mapCtx = useContext(MapContext);
@@ -270,7 +270,7 @@ const KakaoMap = () => {
       setOpenModal(true);
       setMarkers((prev) => ({
         ...prev,
-        src: "http://t1.daumcdn.net/mapjsapi/images/2x/marker.png",
+        src: allLocation,
       }));
     } // 키워드 검색 (키워드, 콜백함수, 기본옵션)
 
@@ -285,7 +285,7 @@ const KakaoMap = () => {
       setOpenModal(true);
       setMarkers((prev) => ({
         ...prev,
-        src: "http://t1.daumcdn.net/mapjsapi/images/2x/marker.png",
+        src: allLocation,
       }));
     } // 일반 검색 (키워드, 콜백함수)
   }, [searchKeyWord, searchLocation, onCategory]);
@@ -392,7 +392,7 @@ const KakaoMap = () => {
               }}
             />
             {isOpen && name && name.name === data.name && (
-              <CustomOverlayMap position={data.infoPosistion} yAnchor={2.3}>
+              <CustomOverlayMap position={data.infoPosistion} yAnchor={2}>
                 <div className={styles.markerInfo}>
                   <p>{data.name ? data.name : data.address}</p>
                 </div>
