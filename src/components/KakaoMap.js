@@ -13,7 +13,7 @@ import MobileNavigation from "./MobileNavigation";
 import FavoriteList from "./FavoriteList";
 import SearchList from "./SearchList";
 import CategoryList from "./CategoryList";
-import allLocation from '../images/allLocaiton.png'
+import allLocation from "../images/allLocaiton.png";
 
 const KakaoMap = () => {
   const { kakao } = window;
@@ -37,6 +37,8 @@ const KakaoMap = () => {
 
   const [info, setInfo] = useState([]);
   const [isFavorite, setIsFavorite] = useState([]);
+
+  const [isActive, setIsActive] = useState();
 
   const [markers, setMarkers] = useState({
     src: allLocation,
@@ -103,19 +105,40 @@ const KakaoMap = () => {
   const openFavoritHandler = () => {
     setOpenModal(false);
     setOpenFavorite((prev) => !prev);
+    setIsActive(true);
   };
   // 즐겨찾기 리스트 오픈 핸들러
 
   const openCategoryHandler = () => {
     setOpenMenu((prev) => !prev);
+    setIsActive(true);
   };
   // 카테고리 리스트 오픈 핸들러
 
   const openListHandler = (favoriteData) => {
     setOpenFavorite(false);
     setOpenModal((prev) => !prev);
+    setIsActive(true);
   };
   // 검색 리스트 오픈 핸들러
+
+  const onActiveHandler = (data) => {
+    switch (data) {
+      case 0:
+        setOpenFavorite(false);
+        setOpenModal((prev) => !prev);
+        break;
+      case 1:
+        setOpenModal(false);
+        setOpenFavorite((prev) => !prev);
+        break;
+      case 2:
+        setOpenMenu((prev) => !prev);
+        break;
+      default:
+        break;
+    }
+  };
 
   const onCategoryHandler = (data) => {
     setOnCategory(data);
@@ -203,7 +226,7 @@ const KakaoMap = () => {
               lat: result[i].y,
               lng: result[i].x,
             },
-            infoPosistion : {
+            infoPosistion: {
               lat: result[i].y,
               lng: result[i].x,
             },
@@ -437,9 +460,11 @@ const KakaoMap = () => {
         {/* 지도 줌 옵션 */}
       </Map>
       <MobileNavigation
-        openList={openListHandler}
-        openFavorite={openFavoritHandler}
-        openCategory={openCategoryHandler}
+        // openList={openListHandler}
+        // openFavorite={openFavoritHandler}
+        // openCategory={openCategoryHandler}
+        // isActive={isActive}
+        onActiveHandler={onActiveHandler}
       />
     </div>
   );

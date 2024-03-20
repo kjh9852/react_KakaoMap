@@ -31,3 +31,7 @@
     font-weight: normal;
     font-size: 0.875rem;
 }
+
+.nav li.active span {
+    color: #1A73E8;
+}

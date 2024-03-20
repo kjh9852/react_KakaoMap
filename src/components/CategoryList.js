@@ -11,7 +11,7 @@ const CategoryList = (props) => {
     setIsActive(() => {
       return data.code;
     });
-    if(data === isActive) {
+    if(data.code === isActive) {
       setIsActive('');
     }
     props.onCategory(data.code);
