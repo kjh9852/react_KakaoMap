@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import NavList from "./NavList";
 import styles from "./MobileNavigation.module.css";
 
@@ -14,17 +14,17 @@ const menuList = [
   {
     title: "List",
     src: list,
-    activeSrc: listActive
+    activeSrc: listActive,
   },
   {
     title: "Favorite",
     src: star,
-    activeSrc: starActive
+    activeSrc: starActive,
   },
   {
     title: "Category",
     src: category,
-    activeSrc: categoryActive
+    activeSrc: categoryActive,
   },
 ];
 
@@ -32,11 +32,32 @@ const MobileNavigation = (props) => {
   const [isActive, setIsActive] = useState("");
 
   const onActiveHandler = (index) => {
-    setIsActive(index)
-    props.onActiveHandler(index);
-    if(index === isActive) {
-        setIsActive("");
+    switch (index) {
+      case 0:
+        setIsActive(() => {
+          if(props.list.length > 0) {
+            return index;
+          } else return;
+        });
+        break;
+      case 1:
+        setIsActive(() => {
+          if(props.favorite.length > 0) {
+            return index;
+          } else return;
+        });
+        break;
+      case 2:
+          setIsActive(index);
+        break;
+      default:
+        break;
     }
+
+    if (index === isActive) {
+      setIsActive("");
+    }
+    props.onActiveHandler(index);
   };
 
   return (

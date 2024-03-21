@@ -55,8 +55,8 @@ const SearchForm = (props) => {
         .then(async (res) => {
           const { documents } = await res.json();
           console.log(documents);
-          props.onGeoLocation(enteredInputValue);
           props.onKeyword(null);
+          props.onGeoLocation(enteredInputValue);
 
           if (documents.length === 0) {
             try {
@@ -71,8 +71,8 @@ const SearchForm = (props) => {
               ).then(async (res) => {
                 const { documents } = await res.json();
                 console.log(documents);
-                props.onKeyword(enteredInputValue);
                 props.onGeoLocation(null);
+                props.onKeyword(enteredInputValue);
               });
             } catch (error) {
               console.log(error);

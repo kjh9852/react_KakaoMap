@@ -30,6 +30,8 @@ const KakaoMap = () => {
 
   const mapCtx = useContext(MapContext);
 
+  const [searchKeyWord, setSearchKeyWord] = useState(null);
+  const [searchLocation, setSearchLocation] = useState(null);
   const [onCategory, setOnCategory] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState();
 
@@ -65,25 +67,24 @@ const KakaoMap = () => {
     errMsg: null,
     isLoading: true,
   });
-  // 최초 위치 default 값
-  
+  // 최초 위치 deafault 값
+
   const geoLocationHandler = (value) => {
-    setSearchResult({
+    setSearchResult((prev) => ({
+      locaiton: value,
       keyword: null,
-      location: value && value,
-    });
+    }))
   };
   // 장소 검색 저장
 
   const keyWordHandler = (value) => {
-    setSearchResult({
-      location:null,
-      keyword: value && value,
-    })
+    setSearchResult((prev) => ({
+      locaiton: null,
+      keyword: value,
+    }))
+    // setSearchKeyWord(value);
   };
   // 키워드 저장
-
-  console.log(searchResult);
 
   const onMoveLocation = (data) => {
     setLocation({
@@ -113,23 +114,35 @@ const KakaoMap = () => {
   };
   // 마우스 아웃시 마커 숨김
 
+  const openFavoritHandler = () => {
+    setOpenModal(false);
+    setOpenFavorite((prev) => !prev);
+    setIsActive(true);
+  };
+  // 즐겨찾기 리스트 오픈 핸들러
+
+  const openCategoryHandler = () => {
+    setOpenMenu((prev) => !prev);
+    setIsActive(true);
+  };
+  // 카테고리 리스트 오픈 핸들러
+
+  const openListHandler = (favoriteData) => {
+    setOpenFavorite(false);
+    setOpenModal((prev) => !prev);
+    setIsActive(true);
+  };
+  // 검색 리스트 오픈 핸들러
+
   const onActiveHandler = (data) => {
     switch (data) {
       case 0:
         setOpenFavorite(false);
-        setOpenModal((prev) => {
-          if(info.length > 1) {
-            return !prev;
-          } else return;
-        });
+        setOpenModal((prev) => !prev);
         break;
       case 1:
         setOpenModal(false);
-        setOpenFavorite((prev) => {
-          if(info.length > 1) {
-            return !prev;
-          } else return;
-        });;
+        setOpenFavorite((prev) => !prev);
         break;
       case 2:
         setOpenMenu((prev) => !prev);
@@ -138,14 +151,11 @@ const KakaoMap = () => {
         break;
     }
   };
-  // 하단 네비게이션 반응
 
   const onCategoryHandler = (data) => {
     setOnCategory(data);
-    setSearchResult({
-      location: null,
-      keyword: null
-    });
+    setSearchKeyWord(null);
+    setSearchLocation(null);
   };
   // 카테고리 클릭 핸들러
 
@@ -166,10 +176,8 @@ const KakaoMap = () => {
       },
       isPanto: false,
     });
-    setSearchResult({
-      location: null,
-      keyword: null
-    });
+    setSearchKeyWord(null);
+    setSearchLocation(null);
   };
   // 지도 드래그시 현재 위치 값 변경
 
@@ -269,10 +277,7 @@ const KakaoMap = () => {
 
         if (onCategory) {
           for (const key in result) {
-            setSearchResult({
-              location: null,
-              keyword: null
-            });
+            setSearchKeyWord(null);
             setInfo([]);
             infoArray.push({
               id: result[key].id,
@@ -294,7 +299,7 @@ const KakaoMap = () => {
           return;
         }
 
-        if (searchResult.location !== null) {
+        if (searchLocation) {
           for (const key in result) {
             setOnCategory(null);
             setInfo([]);
@@ -322,11 +327,7 @@ const KakaoMap = () => {
 
     if (searchResult.keyword !== null) {
       places.keywordSearch(searchResult.keyword, callback, defaultOptions);
-      setOpenModal(() => {
-        if(info.length > 1) {
-          return true;
-        } else return;
-      });
+      setOpenModal(true);
       setMarkers((prev) => ({
         ...prev,
         src: allLocation,
@@ -339,8 +340,8 @@ const KakaoMap = () => {
       });
     } // 카테고리 검색 (키워드, 콜백함수, 기본옵션, {부드럽게 이동})
 
-    if (searchResult.location !== null) {
-      geocoder.addressSearch(searchResult.location, callback);
+    if (searchLocation !== null) {
+      geocoder.addressSearch(searchLocation, callback);
       // geocoder.coord2Address(info[0].center.lng, info[0].center.lat, callback)
       setOpenModal(true);
       setMarkers((prev) => ({
@@ -348,7 +349,7 @@ const KakaoMap = () => {
         src: allLocation,
       }));
     } // 일반 검색 (키워드, 콜백함수)
-  }, [searchResult.keyword,searchResult.location ,onCategory]);
+  }, [searchKeyWord, searchLocation, onCategory]);
 
   useEffect(() => {
     //현재 위치로 초기화
@@ -497,8 +498,10 @@ const KakaoMap = () => {
         {/* 지도 줌 옵션 */}
       </Map>
       <MobileNavigation
-        favorite={mapCtx.lists}
-        list={info}
+        // openList={openListHandler}
+        // openFavorite={openFavoritHandler}
+        // openCategory={openCategoryHandler}
+        // isActive={isActive}
         onActiveHandler={onActiveHandler}
       />
     </div>
