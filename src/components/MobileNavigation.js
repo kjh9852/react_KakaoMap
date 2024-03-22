@@ -37,20 +37,21 @@ const MobileNavigation = (props) => {
         setIsActive(() => {
           if(props.list.length > 0) {
             return index;
-          } else return;
+          } else return alert('리스트가 없습니다');
         });
         break;
       case 1:
         setIsActive(() => {
           if(props.favorite.length > 0) {
             return index;
-          } else return;
+          } else return alert('리스트가 없습니다');
         });
         break;
       case 2:
           setIsActive(index);
         break;
       default:
+        alert('리스트가 없습니다');
         break;
     }
 
