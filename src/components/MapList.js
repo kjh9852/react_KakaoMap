@@ -9,13 +9,14 @@ const MapList = (props) => {
   return (
     <div onClick={props.onMoveLocaiton} className={styles.container}>
       <div className={styles.list}>
-        <h3 key={props.id}>{props.name}</h3>
+        <h3 key={props.id}>{props.name ? props.name : props.address}</h3>
         <div className={styles.list_info}>
           <p>{props.address}</p>
           <p>{props.phone}</p>
         </div>
-        <p className={styles.list_category}>{props.categoryName}</p>
+        {props.categoryName && <p className={styles.list_category}>{props.categoryName}</p>}
       </div>
+      {props.id &&
       <div>
           <button className={styles.btn} onClick={props.toggleHandler}>
             <svg
@@ -32,6 +33,7 @@ const MapList = (props) => {
             </svg>
           </button>
         </div>
+        }
     </div>
   );
 };

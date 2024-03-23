@@ -14,6 +14,7 @@ import FavoriteList from "./FavoriteList";
 import SearchList from "./SearchList";
 import CategoryList from "./CategoryList";
 import allLocation from "../images/allLocaiton.png";
+import Marker from "./Marker";
 
 const KakaoMap = () => {
   const { kakao } = window;
@@ -66,7 +67,7 @@ const KakaoMap = () => {
     isLoading: true,
   });
   // 최초 위치 default 값
-  
+
   const geoLocationHandler = (value) => {
     setSearchResult({
       keyword: null,
@@ -77,13 +78,11 @@ const KakaoMap = () => {
 
   const keyWordHandler = (value) => {
     setSearchResult({
-      location:null,
+      location: null,
       keyword: value && value,
-    })
+    });
   };
   // 키워드 저장
-
-  console.log(searchResult);
 
   const onMoveLocation = (data) => {
     setLocation({
@@ -118,7 +117,7 @@ const KakaoMap = () => {
       case 0:
         setOpenFavorite(false);
         setOpenModal((prev) => {
-          if(info.length > 1) {
+          if (info.length > 0) {
             return !prev;
           } else return;
         });
@@ -126,10 +125,10 @@ const KakaoMap = () => {
       case 1:
         setOpenModal(false);
         setOpenFavorite((prev) => {
-          if(info.length > 1) {
+          if (info.length > 0) {
             return !prev;
           } else return;
-        });;
+        });
         break;
       case 2:
         setOpenMenu((prev) => !prev);
@@ -144,7 +143,7 @@ const KakaoMap = () => {
     setOnCategory(data);
     setSearchResult({
       location: null,
-      keyword: null
+      keyword: null,
     });
   };
   // 카테고리 클릭 핸들러
@@ -168,7 +167,7 @@ const KakaoMap = () => {
     });
     setSearchResult({
       location: null,
-      keyword: null
+      keyword: null,
     });
   };
   // 지도 드래그시 현재 위치 값 변경
@@ -225,6 +224,7 @@ const KakaoMap = () => {
           },
         }));
         console.log(result);
+
         for (let i = 0; i < result.length; i++) {
           markers.push({
             position: {
@@ -271,7 +271,7 @@ const KakaoMap = () => {
           for (const key in result) {
             setSearchResult({
               location: null,
-              keyword: null
+              keyword: null,
             });
             setInfo([]);
             infoArray.push({
@@ -313,7 +313,6 @@ const KakaoMap = () => {
               favorite: false,
             });
             setInfo(infoArray);
-            console.log(info);
           }
         }
         return;
@@ -323,7 +322,7 @@ const KakaoMap = () => {
     if (searchResult.keyword !== null) {
       places.keywordSearch(searchResult.keyword, callback, defaultOptions);
       setOpenModal(() => {
-        if(info.length > 1) {
+        if (info.length > 1) {
           return true;
         } else return;
       });
@@ -341,14 +340,15 @@ const KakaoMap = () => {
 
     if (searchResult.location !== null) {
       geocoder.addressSearch(searchResult.location, callback);
-      // geocoder.coord2Address(info[0].center.lng, info[0].center.lat, callback)
+      console.log(info);
+      // geocoder.coord2Address("37.291503147262","126.996653122964", callback)
       setOpenModal(true);
       setMarkers((prev) => ({
         ...prev,
         src: allLocation,
       }));
     } // 일반 검색 (키워드, 콜백함수)
-  }, [searchResult.keyword,searchResult.location ,onCategory]);
+  }, [searchResult.keyword, searchResult.location, onCategory, info.length]);
 
   useEffect(() => {
     //최초 현재 위치로 초기화
@@ -394,7 +394,7 @@ const KakaoMap = () => {
       center: data.center,
       favorite: true,
     });
-
+    console.log(mapCtx.lists);
     const changedList = info.map((list) => {
       if (list.id === data.id) {
         return { ...data, favorite: true };
@@ -440,25 +440,21 @@ const KakaoMap = () => {
         {/* 현 위치 버튼 */}
 
         {positions.map((data) => (
-          <div>
-            <MapMarker
-              className={styles.markerInfo}
-              onMouseOver={onMarkersHandler.bind(null, data)}
-              onMouseOut={onMouseOut}
-              position={data.position}
-              image={{
-                src: markers.src,
-                size: imageSize,
-              }}
-            />
-            {isOpen && name && name.name === data.name && (
-              <CustomOverlayMap position={data.infoPosistion} yAnchor={2}>
-                <div className={styles.markerInfo}>
-                  <p>{data.name ? data.name : data.address}</p>
-                </div>
-              </CustomOverlayMap>
-            )}
-          </div>
+          <Marker
+            position={data.position}
+            onMarkersHandler={onMarkersHandler.bind(null, data)}
+            onMouseOut={onMouseOut}
+            image={{
+              src: markers.src,
+              size: markers.size,
+            }}
+            isOpen={isOpen}
+            name={name && name}
+            saveName={name && name.name}
+            inSertName={data.name}
+            infoPosistion={data.infoPosistion}
+            address={data.address}
+          />
         ))}
         {/* 맵 마커 */}
 
