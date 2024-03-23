@@ -115,6 +115,7 @@ const KakaoMap = () => {
   const onActiveHandler = (data) => {
     switch (data) {
       case 0:
+        setOpenMenu(false);
         setOpenFavorite(false);
         setOpenModal((prev) => {
           if (info.length > 0) {
@@ -123,6 +124,7 @@ const KakaoMap = () => {
         });
         break;
       case 1:
+        setOpenMenu(false);
         setOpenModal(false);
         setOpenFavorite((prev) => {
           if (info.length > 0) {
@@ -131,6 +133,8 @@ const KakaoMap = () => {
         });
         break;
       case 2:
+        setOpenFavorite(false);
+        setOpenModal(false);
         setOpenMenu((prev) => !prev);
         break;
       default:
@@ -396,7 +400,9 @@ const KakaoMap = () => {
     });
     console.log(mapCtx.lists);
     const changedList = info.map((list) => {
-      if (list.id === data.id) {
+      if (
+        list.id === data.id
+      ) {
         return { ...data, favorite: true };
       } else return list;
     });
@@ -442,7 +448,8 @@ const KakaoMap = () => {
         {positions.map((data) => (
           <Marker
             position={data.position}
-            onMarkersHandler={onMarkersHandler.bind(null, data)}
+            onMouseOver={onMarkersHandler.bind(null, data)}
+            onClick={onMarkersHandler.bind(null, data)}
             onMouseOut={onMouseOut}
             image={{
               src: markers.src,
@@ -467,7 +474,7 @@ const KakaoMap = () => {
         )}
         {/* 카테고리 리스트 */}
 
-        {!openFavorite && info.length >= 1 && (
+        {!openMenu && !openFavorite && info.length >= 1 && (
           <SearchList
             openModal={openModal}
             openMenu={openFavorite}

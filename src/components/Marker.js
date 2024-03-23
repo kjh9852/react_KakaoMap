@@ -7,6 +7,7 @@ const Marker = (props) => {
       <MapMarker
         className={styles.markerInfo}
         onMouseOver={props.onMarkersHandler}
+        onClick={props.onClick}
         onMouseOut={props.onMouseOut}
         position={props.position}
         image={props.image}
