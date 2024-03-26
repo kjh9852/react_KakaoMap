@@ -21,6 +21,7 @@ const SearchList = (props) => {
             favoriteFill={data.favorite ? "#FFF500" : "#ededed"}
           />
         ))}
+        {props.pageNum.map((i) => <span onClick={() => props.onPageChange(i)}>{i}</span>)}
       </Modal>
     </>
   );
