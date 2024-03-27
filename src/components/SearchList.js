@@ -21,7 +21,7 @@ const SearchList = (props) => {
             name={data.name}
             phone={data.phone}
             categoryName={data.categoryName}
-            toggleHandler={props.addFavoriteHandler.bind(null, data)}
+            toggleHandler={() => props.addFavoriteHandler(data)}
             favoriteFill={data.favorite ? "#FFF500" : "#ededed"}
           />
         ))}

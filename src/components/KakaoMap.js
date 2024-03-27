@@ -120,11 +120,7 @@ const KakaoMap = () => {
       case 0:
         setOpenMenu(false);
         setOpenFavorite(false);
-        setOpenModal((prev) => {
-          if (info.length > 0) {
-            return !prev;
-          } else return;
-        });
+        setOpenModal((prev) => !prev);
         break;
       case 1:
         setOpenMenu(false);
@@ -217,20 +213,20 @@ const KakaoMap = () => {
       bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x));
     }
     setPositions(markers);
-  };
+  }; // 마커 생성
 
   const displayPagination = (pagination) => {
     const pageArray = Array.from({ length: pagination.last }, (v, i) => i + 1);
     setPageNum([...pageArray]);
     setCurrentPage(1);
     return;
-  };
+  }; // 리스트 페이지 생성
 
   const onPageNumHandler = (page) => {
     setCurrentPage(page);
     searchPlace(page);
     console.log(page);
-  };
+  }; // current page 감지
 
   const getList = (data) => {
     const infoArray = [];
@@ -310,7 +306,7 @@ const KakaoMap = () => {
       }
       return info;
     }
-  };
+  }; // 리스트에 저장
 
   const geocoder = new kakao.maps.services.Geocoder();
   // 지역검색
@@ -320,6 +316,11 @@ const KakaoMap = () => {
   // 카테고리 검색
 
   const searchPlace = (page) => {
+    const addressOption = {
+      page: page || 1,
+      size: 15,
+      analyze_type: kakao.maps.services.AnalyzeType.EXACT
+    }
     const defaultOptions = {
       x: geolocation.longitude,
       y: geolocation.latitude,
@@ -329,14 +330,13 @@ const KakaoMap = () => {
       sort: kakao.maps.services.SortBy.DISTANCE,
     };
     // 검색 시 default 옵션(현재 위치 기반)
-    console.log(defaultOptions);
 
     if (searchResult.keyword !== null) {
       places.keywordSearch(searchResult.keyword, searchDB, defaultOptions);
       setOpenModal(() => {
         if (info.length > 1) {
           return true;
-        } else return;
+        } else return false;
       });
       setMarkers((prev) => ({
         ...prev,
@@ -351,17 +351,21 @@ const KakaoMap = () => {
     } // 카테고리 검색 (키워드, 콜백함수, 기본옵션, {부드럽게 이동})
 
     if (searchResult.location !== null) {
-      geocoder.addressSearch(searchResult.location, searchDB, defaultOptions);
-      console.log(info);
+      geocoder.addressSearch(searchResult.location, searchDB, addressOption);
       setOpenModal(true);
       setMarkers((prev) => ({
         ...prev,
         src: allLocation,
       }));
     }
-  };
+  }; // 페이지 이동시
 
   useEffect(() => {
+    const addressOption = {
+      page: 1,
+      size: 15,
+      analyze_type: kakao.maps.services.AnalyzeType.EXACT
+    }
     const defaultOptions = {
       x: geolocation.longitude,
       y: geolocation.latitude,
@@ -371,7 +375,6 @@ const KakaoMap = () => {
       sort: kakao.maps.services.SortBy.DISTANCE,
     };
     // 검색 시 default 옵션(현재 위치 기반)
-    console.log(defaultOptions);
 
     if (searchResult.keyword !== null) {
       places.keywordSearch(
@@ -400,7 +403,7 @@ const KakaoMap = () => {
       geocoder.addressSearch(
         searchResult.location,
         updateSearchDB,
-        defaultOptions
+        addressOption
       );
       console.log(info);
       setOpenModal(true);
@@ -411,6 +414,7 @@ const KakaoMap = () => {
     }
     // 일반 검색 (키워드, 콜백함수)
   }, [searchResult.location, searchResult.keyword, onCategory]);
+  // 최초 검색시
 
   const searchDB = (result, status) => {
     if (status === kakao.maps.services.Status.OK) {
@@ -474,6 +478,7 @@ const KakaoMap = () => {
       }));
     }
   }, []);
+  // 현재 위치로 초기화
 
   const addFavoriteHandler = (data) => {
     mapCtx.addList({
@@ -494,6 +499,7 @@ const KakaoMap = () => {
     setInfo(changedList);
     setIsFavorite(changedList);
   };
+  // 즐겨찾기 추가
 
   const removeFavoriteHandler = (data) => {
     mapCtx.removeList(data.id);
@@ -505,7 +511,8 @@ const KakaoMap = () => {
     });
     setInfo(changedList);
   };
-
+  // 즐겨찾기 제거
+  
   return (
     <div style={{ height: "100%" }}>
       <SearchForm

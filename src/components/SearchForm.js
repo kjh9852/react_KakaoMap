@@ -42,7 +42,7 @@ const SearchForm = (props) => {
   const token = process.env.REACT_APP_API_KEY;
 
   const response = async (value, url) => {
-    return await fetch(url, {
+     return await fetch(url, {
       body: JSON.stringify(),
       headers: {
         Authorization: `KakaoAK ${token}`,
@@ -52,6 +52,7 @@ const SearchForm = (props) => {
         throw new Error("Error!");
       }
       const { documents } = await response.json();
+      console.log(documents);
       let index = documents.length;
       if (index >= 1) {
         return props.onGeoLocation(value);
@@ -65,10 +66,11 @@ const SearchForm = (props) => {
 
     response(enteredInputValue, addressUrl).then((data) => {
       if (!data) {
-        return response(enteredInputValue, keyWordUrl)
+        response(enteredInputValue, keyWordUrl)
       }
       return data;
     }).then(data => {
+      console.log(data);
       return props.onKeyword(data);
     }).catch(error => console.log(error));
   };
