@@ -1,0 +1,15 @@
+.pageNum {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 0 ;
+}
+.pageNum span {
+    cursor: pointer;
+    margin: 0 0.5rem;
+    padding: 0 0.5rem;
+}
+.on {
+    color: #5500ff;
+    font-weight: 500;
+}

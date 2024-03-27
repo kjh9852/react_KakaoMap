@@ -2,8 +2,12 @@ import React, { useContext, useState, useEffect } from "react";
 import Modal from "./Modal";
 import MapList from "./MapList";
 import MapContext from "../store/map-context";
+import styles from "./SearchList.module.css";
 
 const SearchList = (props) => {
+  window.addEventListener('scroll', () => {
+    console.log(window.scrollY)
+  });
   return (
     <>
       <Modal openModal={props.openModal} list={props.list}>
@@ -21,7 +25,18 @@ const SearchList = (props) => {
             favoriteFill={data.favorite ? "#FFF500" : "#ededed"}
           />
         ))}
-        {props.pageNum.map((i) => <span onClick={() => props.onPageChange(i)}>{i}</span>)}
+        <div className={styles.pageNum}>
+          {props.pageNum.map((i) => (
+            <span
+              className={`${
+                props.current === i ? styles.on : ""
+              }`}
+              onClick={() => props.onPageChange(i)}
+            >
+              {i}
+            </span>
+          ))}
+        </div>
       </Modal>
     </>
   );
