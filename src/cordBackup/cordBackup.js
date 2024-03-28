@@ -7,12 +7,12 @@ import {
 } from "react-kakao-maps-sdk";
 import useGeolocation from "react-hook-geolocation";
 import MapContext from "../store/map-context";
-import SearchForm from "./SearchForm";
+import SearchForm from "../components/SearchForm";
 import styles from "./KakaoMap.module.css";
-import MobileNavigation from "./MobileNavigation";
-import FavoriteList from "./FavoriteList";
-import SearchList from "./SearchList";
-import CategoryList from "./CategoryList";
+import MobileNavigation from "../components/MobileNavigation";
+import FavoriteList from "../components/FavoriteList";
+import SearchList from "../components/SearchList";
+import CategoryList from "../components/CategoryList";
 import allLocation from "../images/allLocaiton.png";
 
 const KakaoMap = () => {

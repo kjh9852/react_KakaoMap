@@ -1,14 +1,8 @@
 import { useState } from "react";
-import MapList from "./MapList";
-import styles from "./Modal.module.css";
+import MapList from "../MapList";
+import styles from "./NavigationCard.module.css";
 
-const Modal = (props) => {
-  const [touchPosition, setTouchPosition] = useState();
-
-  const touchHandler = (e) => {
-    setTouchPosition(e.changedTouches[0].pageY);
-  };
-
+const NavigationCard = (props) => {
   return (
     <>
         <div
@@ -23,7 +17,7 @@ const Modal = (props) => {
             borderRadius: "10px 10px 0 0",
             borderBottom: "1px solid #ededed",
             transition: "all 1s ease",
-            ...(props.openModal ? {zIndex: '99'} : {zIndex: '1'}),
+            ...(props.openModal ? {zIndex: '20'} : {zIndex: '1'}),
           }}
         >
           <div className={styles.tabBar}></div>
@@ -46,4 +40,4 @@ const Modal = (props) => {
   );
 };
 
-export default Modal;
+export default NavigationCard;

@@ -1,16 +1,14 @@
 import React, { useContext, useState, useEffect } from "react";
-import Modal from "./Modal";
-import MapList from "./MapList";
-import MapContext from "../store/map-context";
+import NavigationCard from "../Menu/NavigationCard";
+import MapList from "../MapList";
+import MapContext from "../../store/map-context";
 import styles from "./SearchList.module.css";
 
 const SearchList = (props) => {
-  window.addEventListener('scroll', () => {
-    console.log(window.scrollY)
-  });
+
   return (
     <>
-      <Modal openModal={props.openModal} list={props.list}>
+      <NavigationCard openModal={props.openModal} list={props.list}>
         {props.list.map((data) => (
           <MapList
             id={data.id}
@@ -21,7 +19,7 @@ const SearchList = (props) => {
             name={data.name}
             phone={data.phone}
             categoryName={data.categoryName}
-            toggleHandler={() => props.addFavoriteHandler(data)}
+            toggleHandler={props.addFavoriteHandler.bind(null, data)}
             favoriteFill={data.favorite ? "#FFF500" : "#ededed"}
           />
         ))}
@@ -37,7 +35,7 @@ const SearchList = (props) => {
             </span>
           ))}
         </div>
-      </Modal>
+      </NavigationCard>
     </>
   );
 };

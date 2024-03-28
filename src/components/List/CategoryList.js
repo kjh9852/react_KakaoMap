@@ -1,6 +1,6 @@
 import { useState } from "react";
-import category from "../Atom/Category";
-import Modal from "./Modal";
+import category from "../../Atom/Category";
+import NavigationCard from "../Menu/NavigationCard";
 
 import styles from "./CategoryList.module.css";
 
@@ -30,9 +30,9 @@ const CategoryList = (props) => {
   ));
 
   return (
-    <Modal openModal={props.openMenu}>
+    <NavigationCard openModal={props.openMenu}>
       <ul className={styles.category}>{list}</ul>
-    </Modal>
+    </NavigationCard>
   );
 };
 

@@ -9,10 +9,10 @@ import useGeolocation from "react-hook-geolocation";
 import MapContext from "../store/map-context";
 import SearchForm from "./SearchForm";
 import styles from "./KakaoMap.module.css";
-import MobileNavigation from "./MobileNavigation";
-import FavoriteList from "./FavoriteList";
-import SearchList from "./SearchList";
-import CategoryList from "./CategoryList";
+import MobileNavigation from "./Menu/MobileNavigation";
+import FavoriteList from "./List/FavoriteList";
+import SearchList from "./List/SearchList";
+import CategoryList from "./List/CategoryList";
 import allLocation from "../images/allLocaiton.png";
 import Marker from "./Marker";
 
@@ -120,7 +120,11 @@ const KakaoMap = () => {
       case 0:
         setOpenMenu(false);
         setOpenFavorite(false);
-        setOpenModal((prev) => !prev);
+        setOpenModal((prev) => {
+          if (info.length > 0) {
+            return !prev;
+          } else return;
+        });
         break;
       case 1:
         setOpenMenu(false);
@@ -319,8 +323,8 @@ const KakaoMap = () => {
     const addressOption = {
       page: page || 1,
       size: 15,
-      analyze_type: kakao.maps.services.AnalyzeType.EXACT
-    }
+      analyze_type: kakao.maps.services.AnalyzeType.EXACT,
+    };
     const defaultOptions = {
       x: geolocation.longitude,
       y: geolocation.latitude,
@@ -333,11 +337,6 @@ const KakaoMap = () => {
 
     if (searchResult.keyword !== null) {
       places.keywordSearch(searchResult.keyword, searchDB, defaultOptions);
-      setOpenModal(() => {
-        if (info.length > 1) {
-          return true;
-        } else return false;
-      });
       setMarkers((prev) => ({
         ...prev,
         src: allLocation,
@@ -352,7 +351,6 @@ const KakaoMap = () => {
 
     if (searchResult.location !== null) {
       geocoder.addressSearch(searchResult.location, searchDB, addressOption);
-      setOpenModal(true);
       setMarkers((prev) => ({
         ...prev,
         src: allLocation,
@@ -364,8 +362,8 @@ const KakaoMap = () => {
     const addressOption = {
       page: 1,
       size: 15,
-      analyze_type: kakao.maps.services.AnalyzeType.EXACT
-    }
+      analyze_type: kakao.maps.services.AnalyzeType.EXACT,
+    };
     const defaultOptions = {
       x: geolocation.longitude,
       y: geolocation.latitude,
@@ -382,11 +380,7 @@ const KakaoMap = () => {
         updateSearchDB,
         defaultOptions
       );
-      setOpenModal(() => {
-        if (info.length > 1) {
-          return true;
-        } else return;
-      });
+      setOpenModal((prev) => !prev);
       setMarkers((prev) => ({
         ...prev,
         src: allLocation,
@@ -406,7 +400,11 @@ const KakaoMap = () => {
         addressOption
       );
       console.log(info);
-      setOpenModal(true);
+      setOpenFavorite((prev) => {
+        if(prev) {
+          return !prev
+        } else return prev
+      });
       setMarkers((prev) => ({
         ...prev,
         src: allLocation,
@@ -512,7 +510,7 @@ const KakaoMap = () => {
     setInfo(changedList);
   };
   // 즐겨찾기 제거
-  
+
   return (
     <div style={{ height: "100%" }}>
       <SearchForm
@@ -595,6 +593,8 @@ const KakaoMap = () => {
         {/* 지도 줌 옵션 */}
       </Map>
       <MobileNavigation
+        openFavorite={openFavorite}
+        openModal={openModal}
         favorite={mapCtx.lists}
         list={info}
         onActiveHandler={onActiveHandler}

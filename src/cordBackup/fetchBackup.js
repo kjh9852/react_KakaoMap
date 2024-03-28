@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import MapList from "./MapList";
+import MapList from "../components/MapList";
 import useGeolocation from "react-hook-geolocation";
 import styles from "./SearchForm.module.css";
 

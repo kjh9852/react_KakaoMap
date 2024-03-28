@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import MapList from "./MapList";
 import useGeolocation from "react-hook-geolocation";
 import styles from "./SearchForm.module.css";
+import Error from "./UI/Error";
 
 const SearchForm = (props) => {
   const geolocation = useGeolocation({
@@ -11,6 +12,7 @@ const SearchForm = (props) => {
   });
 
   const [geoCoord, setGeoCoord] = useState();
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     if (geolocation.loading) {
@@ -32,7 +34,7 @@ const SearchForm = (props) => {
     event.preventDefault();
     const enteredInputValue = inputValue.current.value;
     if (enteredInputValue === "") {
-      return alert("검색어를 입력해 주세요.");
+      return setError(true);
     }
     mapSearchHandler(enteredInputValue);
   };
@@ -75,8 +77,15 @@ const SearchForm = (props) => {
     }).catch(error => console.log(error));
   };
 
+  const onCancel = () => {
+    setError(false);
+  };
+
+  const message = <Error onCancel={onCancel} message="검색어를 입력해 주세요."/>
+
   return (
     <main className={styles.container}>
+      {error && message}
       <form onSubmit={submitHandler} className={styles.form}>
         <p>
           <input

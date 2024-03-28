@@ -1,0 +1,36 @@
+.backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(0,0,0,0.6);
+    z-index: 99;
+}
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: calc(100vh);
+}
+.card {
+    width: 100%;
+    max-width: 10rem;
+    padding: 0.75rem 0.625rem;
+    margin: 0 auto;
+    border-radius: 5px;
+    border: none;
+    background: #fff;
+}
+.card p {
+    font-size: 0.75rem;
+}
+.card button {
+    cursor: pointer;
+    margin-top: 1rem;
+    padding: 0.325rem 0.75rem;
+    border: none;
+    border-radius: 5px;
+    background: #0085FF;
+}
