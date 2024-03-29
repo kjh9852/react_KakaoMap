@@ -15,6 +15,7 @@ import SearchList from "./List/SearchList";
 import CategoryList from "./List/CategoryList";
 import allLocation from "../images/allLocaiton.png";
 import Marker from "./Marker";
+import LoadingSpinner from './UI/LoadingSpinner';
 
 const KakaoMap = () => {
   const { kakao } = window;
@@ -69,7 +70,7 @@ const KakaoMap = () => {
     errMsg: null,
     isLoading: true,
   });
-  // 최초 위치 default 값
+  // 최초 위치 default 값 
 
   const geoLocationHandler = (value) => {
     setSearchResult({
@@ -513,6 +514,8 @@ const KakaoMap = () => {
 
   return (
     <div style={{ height: "100%" }}>
+      {location.isLoading ? <LoadingSpinner/> :
+      <>
       <SearchForm
         onSearch={onSearch}
         onKeyword={keyWordHandler}
@@ -599,6 +602,8 @@ const KakaoMap = () => {
         list={info}
         onActiveHandler={onActiveHandler}
       />
+      </>
+      }
     </div>
   );
 };
