@@ -13,7 +13,7 @@ const FavoriteList = (props) => {
           {props.list.map((data) => (
             <MapList
               id={data.id}
-              onMoveLocaiton={() => props.onMoveLocation.bind(null, data)}
+              onMoveLocaiton={props.onMoveLocation.bind(null,data)}
               ket={data.id}
               center={data.center}
               name={data.name}

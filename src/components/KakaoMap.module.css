@@ -1,7 +1,11 @@
-.nowLocation {
+.container {
     position: absolute;
     top: 18rem;
-    right: 3px;
+    right: 35px;
+    z-index: 1;
+}
+.nowLocation {
+    position: absolute;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -12,7 +16,6 @@
     background: #fff;
     border-radius: 5px;
     cursor: pointer;
-    z-index: 1;
 }
 .nowLocation button {
     width: 1.125rem;
@@ -22,3 +25,15 @@
     background-size: 1.125rem;
     cursor: pointer;
 }
+.container span {
+    position: absolute;
+    top: 5px;
+    right: 4px;
+    width: 77px;
+    height: 22px;
+    background: url('../images/select_now.png') no-repeat 3px;
+    background-size: 75px 22px;
+    font-size: 0.875rem;
+    color: #fff;
+}
+

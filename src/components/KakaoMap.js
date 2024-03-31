@@ -15,7 +15,7 @@ import SearchList from "./List/SearchList";
 import CategoryList from "./List/CategoryList";
 import allLocation from "../images/allLocaiton.png";
 import Marker from "./Marker";
-import LoadingSpinner from './UI/LoadingSpinner';
+import LoadingSpinner from "./UI/LoadingSpinner";
 
 const KakaoMap = () => {
   const { kakao } = window;
@@ -60,6 +60,7 @@ const KakaoMap = () => {
   const [openModal, setOpenModal] = useState(false);
   const [openFavorite, setOpenFavorite] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
+  const [showNow , setShowNow] = useState(false);
 
   const [location, setLocation] = useState({
     center: {
@@ -70,7 +71,7 @@ const KakaoMap = () => {
     errMsg: null,
     isLoading: true,
   });
-  // 최초 위치 default 값 
+  // 최초 위치 default 값
 
   const geoLocationHandler = (value) => {
     setSearchResult({
@@ -148,21 +149,17 @@ const KakaoMap = () => {
   // 하단 네비게이션 반응
 
   const onCategoryHandler = (data) => {
-    setOnCategory(data);
+    setOnCategory(data && data.code);
     setSearchResult({
       location: null,
       keyword: null,
     });
-  };
-  // 카테고리 클릭 핸들러
-
-  const onCategorySrc = (data) => {
     setMarkers((prev) => ({
       ...prev,
-      src: data ? data : allLocation,
+      src: data ? data.src : allLocation,
     }));
-    console.log(markers);
   };
+  // 카테고리 클릭 핸들러
 
   const onDragMap = (map) => {
     const latlng = map.getCenter();
@@ -177,6 +174,7 @@ const KakaoMap = () => {
       location: null,
       keyword: null,
     });
+    setShowNow(false);
   };
   // 지도 드래그시 현재 위치 값 변경
 
@@ -189,14 +187,17 @@ const KakaoMap = () => {
       },
       isPanto: true,
     }));
+    setShowNow(true);
   };
   // 현재 위치 값 저장
 
-  useEffect(() => {
-    setSelectedCategory(onCategory);
-    if (selectedCategory === onCategory) {
-    }
-  }, [onCategory, selectedCategory]);
+  const onShowHide = () => {
+    setShowNow((prev) => !prev)
+  }
+
+  // useEffect(() => {
+  //   setSelectedCategory(onCategory);
+  // }, [onCategory, selectedCategory]);
 
   const displayMarker = (data) => {
     const bounds = new kakao.maps.LatLngBounds();
@@ -381,7 +382,11 @@ const KakaoMap = () => {
         updateSearchDB,
         defaultOptions
       );
-      setOpenModal((prev) => !prev);
+      setOpenModal((prev) => {
+        if (prev) {
+          return setOpenModal(prev);
+        } else return setOpenModal(!prev);
+      });
       setMarkers((prev) => ({
         ...prev,
         src: allLocation,
@@ -402,9 +407,9 @@ const KakaoMap = () => {
       );
       console.log(info);
       setOpenFavorite((prev) => {
-        if(prev) {
-          return !prev
-        } else return prev
+        if (prev) {
+          return !prev;
+        } else return prev;
       });
       setMarkers((prev) => ({
         ...prev,
@@ -514,96 +519,104 @@ const KakaoMap = () => {
 
   return (
     <div style={{ height: "100%" }}>
-      {location.isLoading ? <LoadingSpinner/> :
-      <>
-      <SearchForm
-        onSearch={onSearch}
-        onKeyword={keyWordHandler}
-        onGeoLocation={geoLocationHandler}
-      />
-      <span id="pagination"></span>
-      <Map // 지도를 표시할 Container
-        id="map"
-        isPanto={location.isPanto}
-        center={location.center}
-        style={{
-          // 지도의 크기
-          width: "100%",
-          minHeight: "calc(100svh - 142px)",
-        }}
-        level={3} // 지도의 확대 레벨
-        onDragEnd={(map) => onDragMap(map)}
-      >
-        <div onClick={onNowLocation} className={styles.nowLocation}>
-          <button></button>
-        </div>
-        {/* 현 위치 버튼 */}
-        {positions.map((data) => (
-          <Marker
-            position={data.position}
-            onMarkersHandler={onMarkersHandler.bind(null, data)}
-            onClick={onMarkersHandler.bind(null, data)}
-            onMouseOut={onMouseOut}
-            image={{
-              src: markers.src,
-              size: markers.size,
+      {location.isLoading ? (
+        <LoadingSpinner />
+      ) : (
+        <>
+          <SearchForm
+            onSearch={onSearch}
+            onKeyword={keyWordHandler}
+            onGeoLocation={geoLocationHandler}
+          />
+          <span id="pagination"></span>
+          <Map // 지도를 표시할 Container
+            id="map"
+            isPanto={location.isPanto}
+            center={location.center}
+            style={{
+              // 지도의 크기
+              width: "100%",
+              minHeight: "calc(100svh - 142px)",
             }}
-            isOpen={isOpen}
-            name={name && name}
-            saveName={name && name.name}
-            inSertName={data.name}
-            infoPosistion={data.infoPosistion}
-            address={data.address}
-          />
-        ))}
-        {/* 맵 마커 */}
+            level={3} // 지도의 확대 레벨
+            onDragEnd={(map) => onDragMap(map)}
+          >
+            <div className={styles.container}>
+              <div onClick={onNowLocation} onMouseOver={onShowHide} onMouseOut={onShowHide} className={styles.nowLocation}>
+                <button></button>
+              </div>
+              {showNow && <span>현재 위치</span>}
+            </div>
+            {/* 현 위치 버튼 */}
 
-        {!openModal && (
-          <CategoryList
-            openMenu={openMenu}
-            onCategory={onCategoryHandler}
-            onCategorySrc={onCategorySrc}
-          />
-        )}
-        {/* 카테고리 리스트 */}
+            {positions.map((data) => (
+              <Marker
+                position={data.position}
+                onMarkersHandler={onMarkersHandler.bind(null, data)}
+                onClick={onMarkersHandler.bind(null, data)}
+                onMouseOut={onMouseOut}
+                image={{
+                  src: markers.src,
+                  size: markers.size,
+                }}
+                isOpen={isOpen}
+                name={name && name}
+                saveName={name && name.name}
+                inSertName={data.name}
+                infoPosistion={data.infoPosistion}
+                address={data.address}
+              />
+            ))}
+            {/* 맵 마커 */}
 
-        {!openMenu && !openFavorite && (
-          <SearchList
+            {!openModal && (
+              <CategoryList
+                changeLocation={onNowLocation}
+                openMenu={openMenu}
+                onCategory={onCategoryHandler}
+                resetMarker={displayMarker}
+                resetList={getList}
+              />
+            )}
+            {/* 카테고리 리스트 */}
+
+            {!openMenu && !openFavorite && (
+              <SearchList
+                openModal={openModal}
+                openMenu={openFavorite}
+                list={info}
+                onMoveLocation={onMoveLocation}
+                addFavoriteHandler={addFavoriteHandler}
+                pageNum={pageNum}
+                onPageChange={onPageNumHandler}
+                current={currentPage}
+              />
+            )}
+            {/* 검색 리스트 */}
+
+            {!openModal && mapCtx.lists.length >= 1 && (
+              <FavoriteList
+                openMenu={openModal}
+                openModal={openFavorite}
+                list={mapCtx.lists}
+                onMoveLocation={onMoveLocation}
+                removeFavoriteHandler={removeFavoriteHandler}
+              />
+            )}
+            {/* 좋아요 리스트 */}
+
+            <ZoomControl />
+            {/* 지도 줌 옵션 */}
+          </Map>
+          <MobileNavigation
+            openFavorite={openFavorite}
             openModal={openModal}
-            openMenu={openFavorite}
+            favorite={mapCtx.lists}
             list={info}
-            onMoveLocation={onMoveLocation}
-            addFavoriteHandler={addFavoriteHandler}
-            pageNum={pageNum}
-            onPageChange={onPageNumHandler}
-            current={currentPage}
+            onActiveHandler={onActiveHandler}
           />
-        )}
-        {/* 검색 리스트 */}
-
-        {!openModal && mapCtx.lists.length >= 1 && (
-          <FavoriteList
-            openMenu={openModal}
-            openModal={openFavorite}
-            list={mapCtx.lists}
-            onMoveLocation={onMoveLocation}
-            removeFavoriteHandler={removeFavoriteHandler}
-          />
-        )}
-        {/* 좋아요 리스트 */}
-
-        <ZoomControl />
-        {/* 지도 줌 옵션 */}
-      </Map>
-      <MobileNavigation
-        openFavorite={openFavorite}
-        openModal={openModal}
-        favorite={mapCtx.lists}
-        list={info}
-        onActiveHandler={onActiveHandler}
-      />
-      </>
-      }
+        </>
+      )}
     </div>
   );
 };

@@ -13,6 +13,7 @@
     border-radius: 50px;
     background: #ededed;
     transition: .3s ease;
+    cursor: pointer;
 }
 
 .category_list.active {

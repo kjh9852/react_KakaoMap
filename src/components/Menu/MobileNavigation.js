@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import NavList from "../../Atom/NavList";
+import NavList from "./NavList";
 import Error from "../UI/Error";
 import styles from "./MobileNavigation.module.css";
 
