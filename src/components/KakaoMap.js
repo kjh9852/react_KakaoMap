@@ -162,6 +162,7 @@ const KakaoMap = () => {
   // 카테고리 클릭 핸들러
 
   const onDragMap = (map) => {
+    setShowNow(() => false);
     const latlng = map.getCenter();
     setLocation({
       center: {
@@ -174,10 +175,9 @@ const KakaoMap = () => {
       location: null,
       keyword: null,
     });
-    setShowNow(false);
   };
   // 지도 드래그시 현재 위치 값 변경
-
+  console.log(showNow);
   const onNowLocation = () => {
     setLocation((prev) => ({
       ...prev,
@@ -571,7 +571,6 @@ const KakaoMap = () => {
 
             {!openModal && (
               <CategoryList
-                changeLocation={onNowLocation}
                 openMenu={openMenu}
                 onCategory={onCategoryHandler}
                 resetMarker={displayMarker}
