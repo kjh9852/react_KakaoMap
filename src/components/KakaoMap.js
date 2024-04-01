@@ -16,6 +16,7 @@ import CategoryList from "./List/CategoryList";
 import allLocation from "../images/allLocaiton.png";
 import Marker from "./Marker";
 import LoadingSpinner from "./UI/LoadingSpinner";
+import SearchCount from "./UI/SearchCount";
 
 const KakaoMap = () => {
   const { kakao } = window;
@@ -61,7 +62,7 @@ const KakaoMap = () => {
   const [openFavorite, setOpenFavorite] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
   const [showNow , setShowNow] = useState(false);
-
+  const [maxPageCount, setMaxPageCount] = useState('');
   const [location, setLocation] = useState({
     center: {
       lat: null,
@@ -225,6 +226,21 @@ const KakaoMap = () => {
     const pageArray = Array.from({ length: pagination.last }, (v, i) => i + 1);
     setPageNum([...pageArray]);
     setCurrentPage(1);
+
+    setMaxPageCount(pagination.totalCount)
+
+    const pageTime = setTimeout(() => {
+      if(maxPageCount !== '') {
+        setMaxPageCount('')
+      }
+    }, [2500])
+
+    console.log(maxPageCount)
+  
+    if(maxPageCount === '') {
+      clearTimeout(pageTime);
+    }
+    
     return;
   }; // 리스트 페이지 생성
 
@@ -528,7 +544,7 @@ const KakaoMap = () => {
             onKeyword={keyWordHandler}
             onGeoLocation={geoLocationHandler}
           />
-          <span id="pagination"></span>
+        {maxPageCount && <SearchCount fade={styles.fade_in} message={`${maxPageCount}개가 검색되었습니다.`}/>}
           <Map // 지도를 표시할 Container
             id="map"
             isPanto={location.isPanto}

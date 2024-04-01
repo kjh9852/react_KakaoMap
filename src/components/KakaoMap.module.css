@@ -37,3 +37,24 @@
     color: #fff;
 }
 
+.fade_in {
+    animation: fadeIn 2.5s ease 0s 1 normal forwards;
+  }
+
+.fade_out {
+    animation: fadeOut 1s ease 0s 1 normal forwards;
+  }
+@keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+   33% {
+    opacity: 1;
+   }
+   66% {
+    opacity: 1;
+   }
+   100% {
+    opacity: 0;
+   }
+  }

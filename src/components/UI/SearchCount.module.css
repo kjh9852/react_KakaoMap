@@ -1,0 +1,14 @@
+.container {
+    position: absolute;
+    width: 100%;
+    padding: 0 3rem;
+    margin: 0 auto;
+    top: 95px;
+    z-index: 2;
+}
+.card {
+    padding: 0.3rem 0.75rem;
+    background: rgba(79, 79, 79, 0.4);
+    border-radius: 5px;
+    color: #fff;
+}
