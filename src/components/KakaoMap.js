@@ -163,7 +163,7 @@ const KakaoMap = () => {
   // 카테고리 클릭 핸들러
 
   const onDragMap = (map) => {
-    setShowNow(() => false);
+    setShowNow(false);
     const latlng = map.getCenter();
     setLocation({
       center: {
@@ -179,6 +179,7 @@ const KakaoMap = () => {
   };
   // 지도 드래그시 현재 위치 값 변경
   console.log(showNow);
+
   const onNowLocation = () => {
     setLocation((prev) => ({
       ...prev,
@@ -196,9 +197,15 @@ const KakaoMap = () => {
     setShowNow((prev) => !prev)
   }
 
-  // useEffect(() => {
-  //   setSelectedCategory(onCategory);
-  // }, [onCategory, selectedCategory]);
+  useEffect(() => {
+    const pageTime = setTimeout(() => {
+      setMaxPageCount('')
+    }, [3000])
+
+    if(maxPageCount !== '') {
+      clearTimeout(pageTime);
+    }
+  }, [maxPageCount]);
 
   const displayMarker = (data) => {
     const bounds = new kakao.maps.LatLngBounds();
@@ -229,18 +236,6 @@ const KakaoMap = () => {
 
     setMaxPageCount(pagination.totalCount)
 
-    const pageTime = setTimeout(() => {
-      if(maxPageCount !== '') {
-        setMaxPageCount('')
-      }
-    }, [2500])
-
-    console.log(maxPageCount)
-  
-    if(maxPageCount === '') {
-      clearTimeout(pageTime);
-    }
-    
     return;
   }; // 리스트 페이지 생성
 
