@@ -34,10 +34,8 @@ const KakaoMap = () => {
   const mapCtx = useContext(MapContext);
 
   const [onCategory, setOnCategory] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState();
 
   const [info, setInfo] = useState([]);
-  const [isFavorite, setIsFavorite] = useState([]);
 
   const [searchResult, setSearchResult] = useState({
     location: null,
@@ -47,8 +45,6 @@ const KakaoMap = () => {
   const [currentPage, setCurrentPage] = useState();
   const [pageNum, setPageNum] = useState([]);
 
-  const [isActive, setIsActive] = useState();
-
   const [markers, setMarkers] = useState({
     src: allLocation,
     size: imageSize,
@@ -57,12 +53,13 @@ const KakaoMap = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [positions, setPositions] = useState([]);
   const [name, setName] = useState();
-  const [map, setMap] = useState();
   const [openModal, setOpenModal] = useState(false);
   const [openFavorite, setOpenFavorite] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
-  const [showNow , setShowNow] = useState(false);
-  const [maxPageCount, setMaxPageCount] = useState('');
+  const [showNow, setShowNow] = useState(false);
+  const [maxPageCount, setMaxPageCount] = useState("");
+  const [changePageCount, setChangePageCount] = useState(false);
+
   const [location, setLocation] = useState({
     center: {
       lat: null,
@@ -194,18 +191,8 @@ const KakaoMap = () => {
   // 현재 위치 값 저장
 
   const onShowHide = () => {
-    setShowNow((prev) => !prev)
-  }
-
-  useEffect(() => {
-    const pageTime = setTimeout(() => {
-      setMaxPageCount('')
-    }, [3000])
-
-    if(maxPageCount !== '') {
-      clearTimeout(pageTime);
-    }
-  }, [maxPageCount]);
+    setShowNow((prev) => !prev);
+  };
 
   const displayMarker = (data) => {
     const bounds = new kakao.maps.LatLngBounds();
@@ -234,10 +221,22 @@ const KakaoMap = () => {
     setPageNum([...pageArray]);
     setCurrentPage(1);
 
-    setMaxPageCount(pagination.totalCount)
-
+    setMaxPageCount(pagination.totalCount);
     return;
   }; // 리스트 페이지 생성
+
+  useEffect(() => {
+    setChangePageCount(() => {
+      if(maxPageCount) {
+        setTimeout(() => {
+          setMaxPageCount('')
+        }, [2500])
+        return true;
+      }
+    })
+  }, [maxPageCount]);
+
+  console.log(maxPageCount);
 
   const onPageNumHandler = (page) => {
     setCurrentPage(page);
@@ -512,7 +511,6 @@ const KakaoMap = () => {
       } else return list;
     });
     setInfo(changedList);
-    setIsFavorite(changedList);
   };
   // 즐겨찾기 추가
 
@@ -539,7 +537,12 @@ const KakaoMap = () => {
             onKeyword={keyWordHandler}
             onGeoLocation={geoLocationHandler}
           />
-        {maxPageCount && <SearchCount fade={styles.fade_in} message={`${maxPageCount}개가 검색되었습니다.`}/>}
+          {changePageCount && (
+            <SearchCount
+              fade={`${maxPageCount ? styles.fade_in : ""}`}
+              message={`${maxPageCount}개가 검색되었습니다.`}
+            />
+          )}
           <Map // 지도를 표시할 Container
             id="map"
             isPanto={location.isPanto}
@@ -553,7 +556,12 @@ const KakaoMap = () => {
             onDragEnd={(map) => onDragMap(map)}
           >
             <div className={styles.container}>
-              <div onClick={onNowLocation} onMouseOver={onShowHide} onMouseOut={onShowHide} className={styles.nowLocation}>
+              <div
+                onClick={onNowLocation}
+                onMouseOver={onShowHide}
+                onMouseOut={onShowHide}
+                className={styles.nowLocation}
+              >
                 <button></button>
               </div>
               {showNow && <span>현재 위치</span>}

@@ -12,7 +12,7 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-    height: calc(100vh);
+    height: calc(100svh);
 }
 .card {
     width: 100%;
