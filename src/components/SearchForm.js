@@ -13,6 +13,7 @@ const SearchForm = (props) => {
 
   const [geoCoord, setGeoCoord] = useState();
   const [error, setError] = useState(false);
+  const [errMessage, setErrMessage] = useState('');
 
   useEffect(() => {
     if (geolocation.loading) {
@@ -54,34 +55,35 @@ const SearchForm = (props) => {
         throw new Error("Error!");
       }
       const { documents } = await response.json();
-      console.log(documents);
       let index = documents.length;
       if (index >= 1) {
         return props.onGeoLocation(value);
-      } else return value;
+      }
+      if(index === 0) return value;
     });
   };
 
   const mapSearchHandler = (enteredInputValue) => {
     const addressUrl = `https://dapi.kakao.com/v2/local/search/address.json?query=${enteredInputValue}`;
-    const keyWordUrl = `https://dapi.kakao.com/v2/local/search/keyword.json?y=${geoCoord.y}&x=${geoCoord.x}&radius=20000&query=${enteredInputValue}`;
+    const keyWordUrl = `https://dapi.kakao.com/v2/local/search/keyword.json?query=${enteredInputValue}`;
 
-    response(enteredInputValue, addressUrl).then((data) => {
-      if (!data) {
-        response(enteredInputValue, keyWordUrl)
+    response(enteredInputValue, addressUrl)
+    .then((data) => {
+      console.log(data);
+      if(!data) {
+        response(enteredInputValue,keyWordUrl)
       }
       return data;
-    }).then(data => {
-      console.log(data);
+    }).then((data) => {
       return props.onKeyword(data);
-    }).catch(error => console.log(error));
+    }).catch((error) => setErrMessage(error));
   };
 
   const onCancel = () => {
     setError(false);
   };
 
-  const message = <Error onCancel={onCancel} message="검색어를 입력해 주세요."/>
+  const message = <Error onCancel={onCancel} message={errMessage ? errMessage : '검색어를 입력해주세요.'}/>
 
   return (
     <main className={styles.container}>

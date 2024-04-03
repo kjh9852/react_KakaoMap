@@ -16,8 +16,8 @@
 }
 .card {
     width: 100%;
-    max-width: 12rem;
-    padding: 0.875rem 1rem;
+    max-width: 14rem;
+    padding: 1.25rem;
     margin: 0 auto;
     border-radius: 5px;
     border: none;
@@ -26,10 +26,11 @@
 
 .card button {
     cursor: pointer;
-    margin-top: 1rem;
-    padding: 0.325rem 0.75rem;
+    margin-top: 1.25rem;
+    padding: 0.325rem 1rem;
     border: none;
     border-radius: 5px;
     background: #0085FF;
     color: #fff;
+    font-size: 1rem;
 }

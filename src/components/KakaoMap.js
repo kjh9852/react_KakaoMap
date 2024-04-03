@@ -78,7 +78,7 @@ const KakaoMap = () => {
     });
   };
   // 장소 검색 저장
-
+  console.log(searchResult);
   const keyWordHandler = (value) => {
     setSearchResult({
       location: null,
@@ -175,7 +175,6 @@ const KakaoMap = () => {
     });
   };
   // 지도 드래그시 현재 위치 값 변경
-  console.log(showNow);
 
   const onNowLocation = () => {
     setLocation((prev) => ({
