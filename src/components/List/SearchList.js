@@ -17,7 +17,7 @@ const SearchList = (props) => {
             address={data.address}
             name={data.name}
             phone={data.phone}
-            categoryName={data.categoryName}
+            category={data.categoryName}
             toggleHandler={props.addFavoriteHandler.bind(null, data)}
             favoriteFill={data.favorite ? "#FFF500" : "#ededed"}
             location={props.location}

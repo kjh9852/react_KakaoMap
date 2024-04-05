@@ -7,7 +7,10 @@ import kmIcon from "../images/km_icon.png";
 const MapList = (props) => {
   const loc = props.location;
   const currentLoc = props.center;
+  
   let dist;
+  let listCategory;
+  let category = props.category;
 
   const getDistance = (lat1, lon1, lat2, lon2) => {
     if (lat1 == lat2 && lon1 == lon2) return 0;
@@ -30,6 +33,15 @@ const MapList = (props) => {
   };
   if (loc) getDistance(loc.lat, loc.lng, currentLoc.lat, currentLoc.lng);
 
+  const changeCategory = () => {
+    const split = category.split('>');
+    if(split.length >= 4) {
+      return listCategory = category.split('>').slice(2,4).join('\u00a0>\u00a0')
+    } else return listCategory = category.split('>').slice(1,3).join('\u00a0>\u00a0')
+  };
+
+  if(props.category) changeCategory();
+
   return (
     <div onClick={props.onMoveLocaiton} className={styles.container}>
       <div className={styles.list}>
@@ -43,8 +55,8 @@ const MapList = (props) => {
           <p>{props.phone}</p>
         </div>
         <div>
-          {props.categoryName && (
-            <p className={styles.list_category}>{props.categoryName}</p>
+          {listCategory && (
+            <p className={styles.list_category}>{listCategory}</p>
           )}
         </div>
       </div>
