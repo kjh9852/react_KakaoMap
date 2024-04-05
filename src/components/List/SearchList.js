@@ -5,7 +5,6 @@ import MapContext from "../../store/map-context";
 import styles from "./SearchList.module.css";
 
 const SearchList = (props) => {
-
   return (
     <>
       <NavigationCard openModal={props.openModal} list={props.list}>
@@ -21,6 +20,7 @@ const SearchList = (props) => {
             categoryName={data.categoryName}
             toggleHandler={props.addFavoriteHandler.bind(null, data)}
             favoriteFill={data.favorite ? "#FFF500" : "#ededed"}
+            location={props.location}
           />
         ))}
         <div className={styles.pageNum}>

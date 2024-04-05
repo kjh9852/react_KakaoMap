@@ -17,6 +17,7 @@ import allLocation from "../images/allLocaiton.png";
 import Marker from "./Marker";
 import LoadingSpinner from "./UI/LoadingSpinner";
 import SearchCount from "./UI/SearchCount";
+import Error from './UI/Error';
 
 const KakaoMap = () => {
   const { kakao } = window;
@@ -26,6 +27,7 @@ const KakaoMap = () => {
     maximumAge: 30000, //캐시에 저장한 위치 정보를 반환할 수 있는 최대 시간
     timeout: 27000, //위치를 반환할 때 소모 할 수 있는 최대 시간
   });
+
   const imageSize = {
     width: 24,
     height: 34,
@@ -50,6 +52,9 @@ const KakaoMap = () => {
     size: imageSize,
   });
 
+  const [onError, setOnError] = useState(false);
+  const [errMessage, setErrMessage] = useState('');
+
   const [isOpen, setIsOpen] = useState(false);
   const [positions, setPositions] = useState([]);
   const [name, setName] = useState();
@@ -69,7 +74,14 @@ const KakaoMap = () => {
     errMsg: null,
     isLoading: true,
   });
-  // 최초 위치 default 값
+  // 해당 하는 로케이션으로 지도 이동
+
+  const [currentLoc, setCurrentLoc] = useState({
+    center: {
+      lat :null,
+      lng: null
+    }
+  })
 
   const geoLocationHandler = (value) => {
     setSearchResult({
@@ -78,7 +90,7 @@ const KakaoMap = () => {
     });
   };
   // 장소 검색 저장
-  console.log(searchResult);
+
   const keyWordHandler = (value) => {
     setSearchResult({
       location: null,
@@ -177,6 +189,13 @@ const KakaoMap = () => {
   // 지도 드래그시 현재 위치 값 변경
 
   const onNowLocation = () => {
+    setCurrentLoc(() => ({
+      center: {
+        lat: geolocation.latitude,
+        lng: geolocation.longitude,
+      },
+    }))
+
     setLocation((prev) => ({
       ...prev,
       center: {
@@ -234,8 +253,6 @@ const KakaoMap = () => {
       }
     })
   }, [maxPageCount]);
-
-  console.log(maxPageCount);
 
   const onPageNumHandler = (page) => {
     setCurrentPage(page);
@@ -339,7 +356,7 @@ const KakaoMap = () => {
     const defaultOptions = {
       x: geolocation.longitude,
       y: geolocation.latitude,
-      raduis: 20000,
+      radius: 5000,
       page: page || 1,
       size: 15,
       sort: kakao.maps.services.SortBy.DISTANCE,
@@ -378,7 +395,7 @@ const KakaoMap = () => {
     const defaultOptions = {
       x: geolocation.longitude,
       y: geolocation.latitude,
-      raduis: 20000,
+      radius: 5000,
       page: 1,
       size: 15,
       sort: kakao.maps.services.SortBy.DISTANCE,
@@ -396,6 +413,7 @@ const KakaoMap = () => {
           return setOpenModal(prev);
         } else return setOpenModal(!prev);
       });
+
       setMarkers((prev) => ({
         ...prev,
         src: allLocation,
@@ -414,7 +432,6 @@ const KakaoMap = () => {
         updateSearchDB,
         addressOption
       );
-      console.log(info);
       setOpenFavorite((prev) => {
         if (prev) {
           return !prev;
@@ -444,6 +461,11 @@ const KakaoMap = () => {
   };
 
   const updateSearchDB = (result, status, pagination) => {
+    if(status === kakao.maps.services.Status.ZERO_RESULT) {
+      setErrMessage('검색 결과가 없습니다.')
+      return setOnError(true);
+    }
+
     if (status === kakao.maps.services.Status.OK) {
       setLocation((prev) => ({
         ...prev,
@@ -452,9 +474,11 @@ const KakaoMap = () => {
           lng: result[0].x,
         },
       }));
+      console.log(result)
       displayPagination(pagination);
       displayMarker([...result]); // marker 생성
       getList([...result]); // list 생성
+      return setOnError(false);
     }
   };
 
@@ -473,6 +497,12 @@ const KakaoMap = () => {
             },
             isLoading: false,
           }));
+          setCurrentLoc(() => ({
+            center: {
+              lat: position.coords.latitude, // 위도
+              lng: position.coords.longitude, // 경도
+            }
+          }))
         },
         (err) => {
           setLocation((prev) => ({
@@ -525,12 +555,17 @@ const KakaoMap = () => {
   };
   // 즐겨찾기 제거
 
+  const onCancel = () => {
+    setOnError(false);
+  };
+
   return (
     <div style={{ height: "100%" }}>
       {location.isLoading ? (
         <LoadingSpinner />
       ) : (
         <>
+        {onError && <Error onCancel={onCancel} message={errMessage}/>}
           <SearchForm
             onSearch={onSearch}
             onKeyword={keyWordHandler}
@@ -607,6 +642,7 @@ const KakaoMap = () => {
                 pageNum={pageNum}
                 onPageChange={onPageNumHandler}
                 current={currentPage}
+                location={currentLoc.center}
               />
             )}
             {/* 검색 리스트 */}

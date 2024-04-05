@@ -1,33 +1,10 @@
-import { useState, useEffect, useRef } from "react";
-import MapList from "./MapList";
-import useGeolocation from "react-hook-geolocation";
+import { useState, useRef } from "react";
 import styles from "./SearchForm.module.css";
 import Error from "./UI/Error";
 
 const SearchForm = (props) => {
-  const geolocation = useGeolocation({
-    enableHighAccuracy: true, // 가장 높은 정확도의 위치 정보를 수신하고 싶을 때의 불리언 값
-    maximumAge: 5000, //캐시에 저장한 위치 정보를 반환할 수 있는 최대 시간
-    timeout: 5000, //위치를 반환할 때 소모 할 수 있는 최대 시간
-  });
-
-  const [geoCoord, setGeoCoord] = useState();
-  const [error, setError] = useState(false);
+  const [onError, setOnError] = useState(false);
   const [errMessage, setErrMessage] = useState('');
-
-  useEffect(() => {
-    if (geolocation.loading) {
-      <p>Loading...</p>;
-    } else {
-      setGeoCoord({
-        x: geolocation.longitude,
-        y: geolocation.latitude,
-      });
-    }
-    if (geolocation.error) {
-      <p>Error.</p>;
-    }
-  }, [geolocation]);
 
   const inputValue = useRef();
 
@@ -35,7 +12,8 @@ const SearchForm = (props) => {
     event.preventDefault();
     const enteredInputValue = inputValue.current.value;
     if (enteredInputValue === "") {
-      return setError(true);
+      setOnError(true);
+      return setErrMessage('검색어를 입력해주세요.')
     }
     mapSearchHandler(enteredInputValue);
   };
@@ -51,6 +29,7 @@ const SearchForm = (props) => {
         Authorization: `KakaoAK ${token}`,
       },
     }).then(async (response) => {
+      console.log(response);
       if (!response.ok) {
         throw new Error("Error!");
       }
@@ -69,25 +48,27 @@ const SearchForm = (props) => {
 
     response(enteredInputValue, addressUrl)
     .then((data) => {
-      console.log(data);
       if(!data) {
         response(enteredInputValue,keyWordUrl)
       }
       return data;
     }).then((data) => {
       return props.onKeyword(data);
-    }).catch((error) => setErrMessage(error));
+    }).catch((error) => {
+      setOnError(true);
+      return setErrMessage(error)
+    });
   };
 
   const onCancel = () => {
-    setError(false);
+    setOnError(false);
   };
 
-  const message = <Error onCancel={onCancel} message={errMessage ? errMessage : '검색어를 입력해주세요.'}/>
+  const message = <Error onCancel={onCancel} message={errMessage && errMessage}/>
 
   return (
     <main className={styles.container}>
-      {error && message}
+      {onError && message}
       <form onSubmit={submitHandler} className={styles.form}>
         <p>
           <input

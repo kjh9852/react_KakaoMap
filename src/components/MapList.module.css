@@ -1,5 +1,6 @@
 .container {
     display: flex;
+    justify-content: space-between;
     padding: 1rem 1.125rem;
     margin-bottom: 1rem;
     background: #0085FF;
@@ -8,7 +9,6 @@
 }
 
 .list {
-    width: 100%;
     text-align: left;
     cursor: pointer;
 }
@@ -40,4 +40,22 @@
 .btn img {
     width: 20px;
     height: 20px;
+}
+.actions {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+.actions > div {
+    display: flex;
+    align-items: center;
+}
+.actions > div > img {
+    width: 1.25rem;
+    height: 1.125rem;
+    margin-right: 0.325rem;
+}
+.actions > div > p {
+    color: #fff;
 }

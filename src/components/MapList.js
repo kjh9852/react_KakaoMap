@@ -1,23 +1,55 @@
-import React, { useContext } from "react";
+import React from "react";
 import MapContext from "../store/map-context";
 import FavoriteBtn from "../images/favorite.png";
 import styles from "./MapList.module.css";
+import kmIcon from "../images/km_icon.png";
 
 const MapList = (props) => {
-  const mapCtx = useContext(MapContext);
+  const loc = props.location;
+  const currentLoc = props.center;
+  let dist;
+
+  const getDistance = (lat1, lon1, lat2, lon2) => {
+    if (lat1 == lat2 && lon1 == lon2) return 0;
+
+    let radLat1 = (Math.PI * lat1) / 180;
+    let radLat2 = (Math.PI * lat2) / 180;
+    let theta = lon1 - lon2;
+    let radTheta = (Math.PI * theta) / 180;
+    dist =
+      Math.sin(radLat1) * Math.sin(radLat2) +
+      Math.cos(radLat1) * Math.cos(radLat2) * Math.cos(radTheta);
+    if (dist > 1) dist = 1;
+
+    dist = Math.acos(dist);
+    dist = (dist * 180) / Math.PI;
+    dist = dist * 60 * 1.1515 * 1.609344 * 1000;
+    if (dist < 100) dist = Math.round(dist / 10) * 10;
+    else dist = Math.round(dist / 100) * 100;
+    return (dist = dist / 1000);
+  };
+  if (loc) getDistance(loc.lat, loc.lng, currentLoc.lat, currentLoc.lng);
 
   return (
     <div onClick={props.onMoveLocaiton} className={styles.container}>
       <div className={styles.list}>
-        <h3 key={props.id}>{props.name && props.name.length >= 20 ? `${props.name.slice(0,18)}...` : props.name}</h3>
+        <h3 key={props.id}>
+          {props.name && props.name.length >= 20
+            ? `${props.name.slice(0, 18)}...`
+            : props.name}
+        </h3>
         <div className={styles.list_info}>
           <p>{props.address}</p>
           <p>{props.phone}</p>
         </div>
-        {props.categoryName && <p className={styles.list_category}>{props.categoryName}</p>}
+        <div>
+          {props.categoryName && (
+            <p className={styles.list_category}>{props.categoryName}</p>
+          )}
+        </div>
       </div>
-      {props.id &&
-      <div>
+      <div className={styles.actions}>
+        {props.id && (
           <button className={styles.btn} onClick={props.toggleHandler}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -32,8 +64,14 @@ const MapList = (props) => {
               />
             </svg>
           </button>
-        </div>
-        }
+        )}
+        {dist && (
+          <div>
+            <img src={kmIcon} alt="km" />
+            <p>{dist + "km"}</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

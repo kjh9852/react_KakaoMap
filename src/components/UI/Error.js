@@ -3,7 +3,7 @@ import styles from "./Error.module.css";
 
 const Modal = (props) => {
   return (
-    <div className={styles.backdrop}>
+    <div onClick={props.onCancel} className={styles.backdrop}>
       <div className={styles.container}>
         <div className={styles.card}>
           <p>{props.message}</p>
