@@ -7,7 +7,7 @@ import kmIcon from "../images/km_icon.png";
 const MapList = (props) => {
   const loc = props.location;
   const currentLoc = props.center;
-  
+
   let dist;
   let listCategory;
   let category = props.category;
@@ -43,7 +43,7 @@ const MapList = (props) => {
   if(props.category) changeCategory();
 
   return (
-    <div onClick={props.onMoveLocaiton} className={styles.container}>
+    <div onClick={props.onMoveLocaiton} className={`${styles.container} ${category ? '' : styles.alignCenter}`}>
       <div className={styles.list}>
         <h3 key={props.id}>
           {props.name && props.name.length >= 20
