@@ -46,8 +46,8 @@ const MapList = (props) => {
     <div onClick={props.onMoveLocaiton} className={`${styles.container} ${category ? '' : styles.alignCenter}`}>
       <div className={styles.list}>
         <h3 key={props.id}>
-          {props.name && props.name.length >= 20
-            ? `${props.name.slice(0, 18)}...`
+          {props.name && props.name.length >= 18
+            ? `${props.name.slice(0, 16)}...`
             : props.name}
         </h3>
         <div className={styles.list_info}>
