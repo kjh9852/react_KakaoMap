@@ -12,26 +12,26 @@ const MapList = (props) => {
   let listCategory;
   let category = props.category;
 
-  const getDistance = (lat1, lon1, lat2, lon2) => {
-    if (lat1 == lat2 && lon1 == lon2) return 0;
+  // const getDistance = (lat1, lon1, lat2, lon2) => {
+  //   if (lat1 == lat2 && lon1 == lon2) return 0;
 
-    let radLat1 = (Math.PI * lat1) / 180;
-    let radLat2 = (Math.PI * lat2) / 180;
-    let theta = lon1 - lon2;
-    let radTheta = (Math.PI * theta) / 180;
-    dist =
-      Math.sin(radLat1) * Math.sin(radLat2) +
-      Math.cos(radLat1) * Math.cos(radLat2) * Math.cos(radTheta);
-    if (dist > 1) dist = 1;
+  //   let radLat1 = (Math.PI * lat1) / 180;
+  //   let radLat2 = (Math.PI * lat2) / 180;
+  //   let theta = lon1 - lon2;
+  //   let radTheta = (Math.PI * theta) / 180;
+  //   dist =
+  //     Math.sin(radLat1) * Math.sin(radLat2) +
+  //     Math.cos(radLat1) * Math.cos(radLat2) * Math.cos(radTheta);
+  //   if (dist > 1) dist = 1;
 
-    dist = Math.acos(dist);
-    dist = (dist * 180) / Math.PI;
-    dist = dist * 60 * 1.1515 * 1.609344 * 1000;
-    if (dist < 100) dist = Math.round(dist / 10) * 10;
-    else dist = Math.round(dist / 100) * 100;
-    return (dist = dist / 1000);
-  };
-  if (loc) getDistance(loc.lat, loc.lng, currentLoc.lat, currentLoc.lng);
+  //   dist = Math.acos(dist);
+  //   dist = (dist * 180) / Math.PI;
+  //   dist = dist * 60 * 1.1515 * 1.609344 * 1000;
+  //   if (dist < 100) dist = Math.round(dist / 10) * 10;
+  //   else dist = Math.round(dist / 100) * 100;
+  //   return (dist = dist / 1000);
+  // };
+  // if (loc) getDistance(loc.lat, loc.lng, currentLoc.lat, currentLoc.lng);
 
   const changeCategory = () => {
     const split = category.split('>');
@@ -77,10 +77,10 @@ const MapList = (props) => {
             </svg>
           </button>
         )}
-        {dist && (
+        {props.roadData && (
           <div>
             <img src={kmIcon} alt="km" />
-            <p>{dist + "km"}</p>
+            <p>{props.roadData + "km"}</p>
           </div>
         )}
       </div>

@@ -1,9 +1,7 @@
-import { useEffect, useState, useContext, useCallback, useMemo } from "react";
+import { useEffect, useState, useContext} from "react";
 import {
   Map,
-  MapMarker,
   ZoomControl,
-  CustomOverlayMap,
 } from "react-kakao-maps-sdk";
 import useGeolocation from "react-hook-geolocation";
 import MapContext from "../store/map-context";
@@ -227,7 +225,7 @@ const KakaoMap = () => {
           lng: data[i].x,
         },
         address: data[i].address_name,
-        name: data[i].place_name ? data[i].place_name : null,
+        name: data[i].place_name ? data[i].place_name : data[i].address_name,
       });
       bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x));
     }
@@ -267,6 +265,19 @@ const KakaoMap = () => {
       setInfo([]);
     }
     // list있을시 초기화
+    let dist;
+    function getDistance(lat1,lng1,lat2,lng2) {
+      function deg2rad(deg) {
+          return deg * (Math.PI/180)
+      }
+      var R = 6371; // Radius of the earth in km
+      var dLat = deg2rad(lat2-lat1);  // deg2rad below
+      var dLon = deg2rad(lng2-lng1);
+      var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon/2) * Math.sin(dLon/2);
+      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      var d = R * c; // Distance in km
+      return Math.round(d * 1000) / 1000; 
+    }
 
     if (searchResult.keyword !== null) {
       for (const key in data) {
@@ -277,6 +288,7 @@ const KakaoMap = () => {
           name: data[key].place_name,
           road_name: data[key].road_address_name,
           phone: data[key].phone,
+          roadData: getDistance(currentLoc.center.lat, currentLoc.center.lng, data[key].y, data[key].x),
           center: {
             lat: data[key].y,
             lng: data[key].x,
@@ -303,6 +315,7 @@ const KakaoMap = () => {
           name: data[key].place_name,
           road_name: data[key].road_address_name,
           phone: data[key].phone,
+          roadData: getDistance(currentLoc.center.lat, currentLoc.center.lng, data[key].y, data[key].x),
           center: {
             lat: data[key].y,
             lng: data[key].x,
@@ -322,10 +335,12 @@ const KakaoMap = () => {
         setOnCategory(null);
         infoArray.push({
           id: data[key].id,
+          type: data[key].address_type,
           address: data[key].address_name,
           name: data[key].place_name,
           road_name: data[key].road_address_name,
           phone: data[key].phone,
+          roadData: getDistance(currentLoc.center.lat, currentLoc.center.lng, data[key].y, data[key].x),
           center: {
             lat: data[key].y,
             lng: data[key].x,
@@ -474,7 +489,6 @@ const KakaoMap = () => {
           lng: result[0].x,
         },
       }));
-      console.log(result)
       displayPagination(pagination);
       displayMarker([...result]); // marker 생성
       getList([...result]); // list 생성
@@ -488,7 +502,6 @@ const KakaoMap = () => {
       // GeoLocation을 이용해서 접속 위치를 얻어옵니다
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          console.log(position);
           setLocation((prev) => ({
             ...prev,
             center: {
