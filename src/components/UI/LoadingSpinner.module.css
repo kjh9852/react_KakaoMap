@@ -12,12 +12,12 @@
 .spinner:after {
   content: ' ';
   display: block;
-  width: 64px;
-  height: 64px;
+  width: 32px;
+  height: 32px;
   margin: 8px;
   border-radius: 50%;
-  border: 6px solid teal;
-  border-color: teal transparent teal transparent;
+  border: 4px solid #0085FF;
+  border-color: #0085FF transparent #0085FF transparent;
   animation: spinner 1.2s linear infinite;
 }
 @keyframes spinner {

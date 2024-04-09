@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import MapContext from "../../store/map-context";
 import MapList from "../MapList";
-import NavigationCard from "../Menu/NavigationCard";
+import ListCard from "../Menu/ListCard";
 
 const FavoriteList = (props) => {
   const mapCtx = useContext(MapContext);
@@ -9,7 +9,7 @@ const FavoriteList = (props) => {
   return (
     <>
       {!props.openMenu && (
-        <NavigationCard openModal={props.openModal} list={props.list}>
+        <ListCard openModal={props.openModal} list={props.list}>
           {props.list.map((data) => (
             <MapList
               id={data.id}
@@ -24,7 +24,7 @@ const FavoriteList = (props) => {
               favoriteFill="#FFF500"
             />
           ))}
-        </NavigationCard>
+        </ListCard>
       )}
     </>
   );

@@ -30,7 +30,6 @@ const KakaoMap = () => {
     width: 24,
     height: 34,
   };
-
   const mapCtx = useContext(MapContext);
 
   const [onCategory, setOnCategory] = useState(null);
@@ -62,6 +61,7 @@ const KakaoMap = () => {
   const [showNow, setShowNow] = useState(false);
   const [maxPageCount, setMaxPageCount] = useState("");
   const [changePageCount, setChangePageCount] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [location, setLocation] = useState({
     center: {
@@ -211,6 +211,7 @@ const KakaoMap = () => {
   };
 
   const displayMarker = (data) => {
+    setIsLoading(true);
     const bounds = new kakao.maps.LatLngBounds();
     const markers = [];
 
@@ -228,6 +229,7 @@ const KakaoMap = () => {
         name: data[i].place_name ? data[i].place_name : data[i].address_name,
       });
       bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x));
+      setIsLoading(false);
     }
     setPositions(markers);
   }; // 마커 생성
@@ -239,7 +241,7 @@ const KakaoMap = () => {
 
     setMaxPageCount(pagination.totalCount);
     return;
-  }; // 리스트 페이지 생성
+  }; // 페이지 리스트 생성
 
   useEffect(() => {
     setChangePageCount(() => {
@@ -259,8 +261,8 @@ const KakaoMap = () => {
   }; // current page 감지
 
   const getList = (data) => {
+    setIsLoading(true);
     const infoArray = [];
-
     if (info.length > 0) {
       setInfo([]);
     }
@@ -297,6 +299,7 @@ const KakaoMap = () => {
           category: data[key].category_group_name,
           favorite: false,
         });
+        setIsLoading(false);
         setInfo(infoArray);
       }
       return info;
@@ -324,6 +327,7 @@ const KakaoMap = () => {
           category: data[key].category_group_name,
           favorite: false,
         });
+        setIsLoading(false);
         setInfo(infoArray);
       }
       return info;
@@ -349,6 +353,7 @@ const KakaoMap = () => {
           category: data[key].category_group_name,
           favorite: false,
         });
+        setIsLoading(false);
         setInfo(infoArray);
       }
       return info;
@@ -590,6 +595,7 @@ const KakaoMap = () => {
               message={`${maxPageCount}개가 검색되었습니다.`}
             />
           )}
+          {isLoading ? <LoadingSpinner/> :
           <Map // 지도를 표시할 Container
             id="map"
             isPanto={location.isPanto}
@@ -674,6 +680,7 @@ const KakaoMap = () => {
             <ZoomControl />
             {/* 지도 줌 옵션 */}
           </Map>
+          }
           <MobileNavigation
             openFavorite={openFavorite}
             openModal={openModal}
