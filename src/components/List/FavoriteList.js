@@ -18,7 +18,7 @@ const FavoriteList = (props) => {
               center={data.center}
               name={data.name}
               address={data.address}
-              categoryName={data.categoryName}
+              category={data.categoryName}
               phone={data.phone}
               toggleHandler={props.removeFavoriteHandler.bind(null, data)}
               favoriteFill="#FFF500"

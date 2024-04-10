@@ -1,20 +1,20 @@
-import React, { useEffect ,useRef } from "react";
+import React, { useState, useEffect ,useRef } from "react";
 import ListCard from "../Menu/ListCard";
 import MapList from "../MapList";
 import MapContext from "../../store/map-context";
 import styles from "./SearchList.module.css";
 
 const SearchList = (props) => {
-  const list = props.list;
-  
+  const activePageNum = props.current
+
   useEffect(() => {
     document.getElementById('listSection').scrollTo(0,0);
-  },[list])
+  },[activePageNum])
   
-  // console.log(listSection && listSection.scrollY);
+
   return (
     <ListCard scroll={props.scroll} openModal={props.openModal}>
-      {list.map((data) => (
+      {props.list.map((data) => (
         <MapList
           id={data.id}
           type={data.type ? data.type : ""}
