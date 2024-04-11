@@ -5,16 +5,23 @@ import MapContext from "../../store/map-context";
 import styles from "./SearchList.module.css";
 
 const SearchList = (props) => {
-  const activePageNum = props.current
+  const activePageNum = props.current;
+
+  const list = props.list;
+
+  if(list.length && list[0].type === "ROAD") {
+    list.sort((a,b) => {
+      return a.roadData > b.roadData ? 1 : -1
+    })
+  }
 
   useEffect(() => {
     document.getElementById('listSection').scrollTo(0,0);
   },[activePageNum])
   
-
   return (
-    <ListCard scroll={props.scroll} openModal={props.openModal}>
-      {props.list.map((data) => (
+    <ListCard scroll={props.scroll} openLayout={props.openList}>
+      {list.map((data) => (
         <MapList
           id={data.id}
           type={data.type ? data.type : ""}

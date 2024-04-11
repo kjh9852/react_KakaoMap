@@ -34,13 +34,13 @@ const MobileNavigation = (props) => {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    if(props.openModal) {
+    if(props.openList) {
       setIsActive(0);
     } else return;
     if(props.openFavorite) {
       setIsActive(1);
     } else return;
-  },[props.openFavorite, props.openModal, isActive]);
+  },[props.openFavorite, props.openList, isActive]);
 
   const onActiveHandler = (index) => {
     switch (index) {

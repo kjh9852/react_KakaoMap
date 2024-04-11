@@ -55,13 +55,15 @@ const KakaoMap = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [positions, setPositions] = useState([]);
   const [name, setName] = useState();
-  const [openModal, setOpenModal] = useState(false);
+  const [openList, setOpenList] = useState(false);
   const [openFavorite, setOpenFavorite] = useState(false);
-  const [openMenu, setOpenMenu] = useState(false);
+  const [openCategory, setOpenCategory] = useState(false);
   const [showNow, setShowNow] = useState(false);
   const [maxPageCount, setMaxPageCount] = useState("");
   const [changePageCount, setChangePageCount] = useState(false);
+
   const [isLoading, setIsLoading] = useState(false);
+  const [mobile, setMobile] = useState();
 
   const [location, setLocation] = useState({
     center: {
@@ -81,14 +83,15 @@ const KakaoMap = () => {
     }
   })
 
-  const geoLocationHandler = (value) => {
+  const addressHandler = (value) => {
     setSearchResult({
       keyword: null,
       location: value && value,
     });
   };
   // 장소 검색 저장
-
+  console.log(searchResult);
+  
   const keyWordHandler = (value) => {
     setSearchResult({
       location: null,
@@ -128,17 +131,17 @@ const KakaoMap = () => {
   const onActiveHandler = (data) => {
     switch (data) {
       case 0:
-        setOpenMenu(false);
+        setOpenCategory(false);
         setOpenFavorite(false);
-        setOpenModal((prev) => {
+        setOpenList((prev) => {
           if (info.length > 0) {
             return !prev;
           } else return;
         });
         break;
       case 1:
-        setOpenMenu(false);
-        setOpenModal(false);
+        setOpenCategory(false);
+        setOpenList(false);
         setOpenFavorite((prev) => {
           if (info.length > 0) {
             return !prev;
@@ -147,8 +150,8 @@ const KakaoMap = () => {
         break;
       case 2:
         setOpenFavorite(false);
-        setOpenModal(false);
-        setOpenMenu((prev) => !prev);
+        setOpenList(false);
+        setOpenCategory((prev) => !prev);
         break;
       default:
         break;
@@ -206,8 +209,21 @@ const KakaoMap = () => {
   };
   // 현재 위치 값 저장
 
+  useEffect(() => {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if(isMobile) {
+      setMobile(true)
+    } else {
+      setMobile(false)
+    }
+  } ,[])
+
   const onShowHide = () => {
-    setShowNow((prev) => !prev);
+    setShowNow((prev) =>  {
+      if(!mobile) {
+        return !prev;
+      } else return false;
+    });
   };
 
   const displayMarker = (data) => {
@@ -262,12 +278,14 @@ const KakaoMap = () => {
 
   const getList = (data) => {
     setIsLoading(true);
+
     const infoArray = [];
     if (info.length > 0) {
       setInfo([]);
+      setIsLoading(false);
     }
     // list있을시 초기화
-    let dist;
+    
     function getDistance(lat1,lng1,lat2,lng2) {
       function deg2rad(deg) {
           return deg * (Math.PI/180)
@@ -428,10 +446,10 @@ const KakaoMap = () => {
         updateSearchDB,
         defaultOptions
       );
-      setOpenModal((prev) => {
+      setOpenList((prev) => {
         if (prev) {
-          return setOpenModal(prev);
-        } else return setOpenModal(!prev);
+          return setOpenList(prev);
+        } else return setOpenList(!prev);
       });
 
       setMarkers((prev) => ({
@@ -452,10 +470,10 @@ const KakaoMap = () => {
         updateSearchDB,
         addressOption
       );
-      setOpenFavorite((prev) => {
+      setOpenList((prev) => {
         if (prev) {
-          return !prev;
-        } else return prev;
+          return setOpenList(prev);
+        } else return setOpenList(!prev);
       });
       setMarkers((prev) => ({
         ...prev,
@@ -539,6 +557,7 @@ const KakaoMap = () => {
       }));
     }
   }, []);
+
   // 현재 위치로 초기화
 
   const addFavoriteHandler = (data) => {
@@ -587,7 +606,7 @@ const KakaoMap = () => {
           <SearchForm
             onSearch={onSearch}
             onKeyword={keyWordHandler}
-            onGeoLocation={geoLocationHandler}
+            onAddress={addressHandler}
           />
           {changePageCount && (
             <SearchCount
@@ -641,9 +660,9 @@ const KakaoMap = () => {
             ))}
             {/* 맵 마커 */}
 
-            {!openModal && (
+            {!openList && (
               <CategoryList
-                openMenu={openMenu}
+                openCategory={openCategory}
                 onCategory={onCategoryHandler}
                 resetMarker={displayMarker}
                 resetList={getList}
@@ -651,10 +670,10 @@ const KakaoMap = () => {
             )}
             {/* 카테고리 리스트 */}
 
-            {!openMenu && !openFavorite && (
+            {!openCategory && !openFavorite && (
               <SearchList
-                openModal={openModal}
-                openMenu={openFavorite}
+                openList={openList}
+                openCategory={openCategory}
                 list={info}
                 onMoveLocation={onMoveLocation}
                 addFavoriteHandler={addFavoriteHandler}
@@ -666,10 +685,10 @@ const KakaoMap = () => {
             )}
             {/* 검색 리스트 */}
 
-            {!openModal && mapCtx.lists.length >= 1 && (
+            {!openList && mapCtx.lists.length >= 1 && (
               <FavoriteList
-                openMenu={openModal}
-                openModal={openFavorite}
+                openCategory={openList}
+                openFavorite={openFavorite}
                 list={mapCtx.lists}
                 onMoveLocation={onMoveLocation}
                 removeFavoriteHandler={removeFavoriteHandler}
@@ -683,7 +702,7 @@ const KakaoMap = () => {
           }
           <MobileNavigation
             openFavorite={openFavorite}
-            openModal={openModal}
+            openList={openList}
             favorite={mapCtx.lists}
             list={info}
             onActiveHandler={onActiveHandler}

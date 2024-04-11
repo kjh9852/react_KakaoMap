@@ -35,7 +35,7 @@ const CategoryList = (props) => {
   ));
 
   return (
-    <ListCard openModal={props.openMenu}>
+    <ListCard openLayout={props.openCategory}>
       <ul className={styles.category}>{list}</ul>
     </ListCard>
   );

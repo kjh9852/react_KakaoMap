@@ -52,7 +52,7 @@ const MapList = (props) => {
   return (
     <div
       onClick={props.onMoveLocaiton}
-      className={`${styles.container} ${category ? "" : styles.alignCenter}`}
+      className={styles.container}
     >
       <div className={styles.layout}>
         <div className={styles.list}>

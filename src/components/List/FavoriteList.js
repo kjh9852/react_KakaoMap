@@ -9,7 +9,7 @@ const FavoriteList = (props) => {
   return (
     <>
       {!props.openMenu && (
-        <ListCard openModal={props.openModal} list={props.list}>
+        <ListCard openLayout={props.openFavorite} list={props.list}>
           {props.list.map((data) => (
             <MapList
               id={data.id}
