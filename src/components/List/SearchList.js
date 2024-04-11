@@ -35,7 +35,7 @@ const SearchList = (props) => {
         {props.pageNum.map((i) => (
           <span
             className={`${props.current === i ? styles.on : ""}`}
-            onClick={() => props.onPageChange(i)}
+            onClick={props.onPageChange.bind(null, i)}
           >
             {i}
           </span>

@@ -36,7 +36,7 @@ const SearchForm = (props) => {
       const { documents } = await response.json();
       let index = documents.length;
       if (index >= 1) {
-        return props.onGeoLocation(value);
+        return props.onAddress(value);
       }
       if(index === 0) return value;
     });

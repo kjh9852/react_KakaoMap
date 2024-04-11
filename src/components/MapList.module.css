@@ -1,6 +1,4 @@
 .container {
-    display: flex;
-    justify-content: space-between;
     padding: 1rem 1.125rem;
     margin-bottom: 1rem;
     background: #0085FF;
@@ -10,17 +8,21 @@
 .alignCenter {
     align-items: center;
 }
-.list {
+.layout {
     text-align: left;
     cursor: pointer;
 }
+.list {
+    display: flex;
+    justify-content: space-between;
+}
 .list h3 {
     font-size: 1.125rem;
-    line-height: 16px;
+    line-height: 22px;
     color: #fff;
+    word-break: keep-all;
 }
 .list_info {
-    line-height: 20px;
     padding: 0.75rem 0;
     font-size: 0.875rem;
     color: #fff;
@@ -37,6 +39,7 @@
     border: none;
     background: none;
     cursor: pointer;
+    height: 20px;
 }
 
 .btn img {
@@ -45,9 +48,8 @@
 }
 .actions {
     display: flex;
-    flex-direction: column;
     justify-content: space-between;
-    align-items: flex-end;
+    align-items: center;
 }
 .actions > div {
     display: flex;
