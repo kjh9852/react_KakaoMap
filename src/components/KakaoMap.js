@@ -1,8 +1,5 @@
-import { useEffect, useState, useContext} from "react";
-import {
-  Map,
-  ZoomControl,
-} from "react-kakao-maps-sdk";
+import { useEffect, useState, useContext, useMemo, memo } from "react";
+import { Map, ZoomControl } from "react-kakao-maps-sdk";
 import useGeolocation from "react-hook-geolocation";
 import MapContext from "../store/map-context";
 import SearchForm from "./SearchForm";
@@ -15,7 +12,7 @@ import allLocation from "../images/allLocaiton.png";
 import Marker from "./Marker";
 import LoadingSpinner from "./UI/LoadingSpinner";
 import SearchCount from "./UI/SearchCount";
-import Error from './UI/Error';
+import Error from "./UI/Error";
 
 const KakaoMap = () => {
   const { kakao } = window;
@@ -37,7 +34,7 @@ const KakaoMap = () => {
   const [info, setInfo] = useState([]);
 
   const [searchResult, setSearchResult] = useState({
-    location: null,
+    address: null,
     keyword: null,
   });
 
@@ -50,7 +47,7 @@ const KakaoMap = () => {
   });
 
   const [onError, setOnError] = useState(false);
-  const [errMessage, setErrMessage] = useState('');
+  const [errMessage, setErrMessage] = useState("");
 
   const [isOpen, setIsOpen] = useState(false);
   const [positions, setPositions] = useState([]);
@@ -78,23 +75,22 @@ const KakaoMap = () => {
 
   const [currentLoc, setCurrentLoc] = useState({
     center: {
-      lat :null,
-      lng: null
-    }
-  })
+      lat: null,
+      lng: null,
+    },
+  });
 
   const addressHandler = (value) => {
     setSearchResult({
       keyword: null,
-      location: value && value,
+      address: value && value,
     });
   };
   // 장소 검색 저장
-  console.log(searchResult);
-  
+
   const keyWordHandler = (value) => {
     setSearchResult({
-      location: null,
+      address: null,
       keyword: value && value,
     });
   };
@@ -162,7 +158,7 @@ const KakaoMap = () => {
   const onCategoryHandler = (data) => {
     setOnCategory(data && data.code);
     setSearchResult({
-      location: null,
+      address: null,
       keyword: null,
     });
     setMarkers((prev) => ({
@@ -195,7 +191,7 @@ const KakaoMap = () => {
         lat: geolocation.latitude,
         lng: geolocation.longitude,
       },
-    }))
+    }));
 
     setLocation((prev) => ({
       ...prev,
@@ -211,16 +207,16 @@ const KakaoMap = () => {
 
   useEffect(() => {
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    if(isMobile) {
-      setMobile(true)
+    if (isMobile) {
+      setMobile(true);
     } else {
-      setMobile(false)
+      setMobile(false);
     }
-  } ,[])
+  }, []);
 
   const onShowHide = () => {
-    setShowNow((prev) =>  {
-      if(!mobile) {
+    setShowNow((prev) => {
+      if (!mobile) {
         return !prev;
       } else return false;
     });
@@ -261,13 +257,13 @@ const KakaoMap = () => {
 
   useEffect(() => {
     setChangePageCount(() => {
-      if(maxPageCount) {
+      if (maxPageCount) {
         setTimeout(() => {
-          setMaxPageCount('')
-        }, [2500])
+          setMaxPageCount("");
+        }, [2500]);
         return true;
       }
-    })
+    });
   }, [maxPageCount]);
 
   const onPageNumHandler = (page) => {
@@ -279,102 +275,79 @@ const KakaoMap = () => {
   const getList = (data) => {
     setIsLoading(true);
 
-    const infoArray = [];
     if (info.length > 0) {
       setInfo([]);
       setIsLoading(false);
     }
     // list있을시 초기화
-    
-    function getDistance(lat1,lng1,lat2,lng2) {
+
+    function getDistance(lat1, lng1, lat2, lng2) {
       function deg2rad(deg) {
-          return deg * (Math.PI/180)
+        return deg * (Math.PI / 180);
       }
       var R = 6371; // Radius of the earth in km
-      var dLat = deg2rad(lat2-lat1);  // deg2rad below
-      var dLon = deg2rad(lng2-lng1);
-      var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon/2) * Math.sin(dLon/2);
-      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      var dLat = deg2rad(lat2 - lat1); // deg2rad below
+      var dLon = deg2rad(lng2 - lng1);
+      var a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(deg2rad(lat1)) *
+          Math.cos(deg2rad(lat2)) *
+          Math.sin(dLon / 2) *
+          Math.sin(dLon / 2);
+      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
       var d = R * c; // Distance in km
-      return Math.round(d * 1000) / 1000; 
+      return Math.round(d * 1000) / 1000;
     }
 
-    if (searchResult.keyword !== null) {
-      for (const key in data) {
-        setOnCategory(null);
-        infoArray.push({
-          id: data[key].id,
-          address: data[key].address_name,
-          name: data[key].place_name,
-          road_name: data[key].road_address_name,
-          phone: data[key].phone,
-          roadData: getDistance(currentLoc.center.lat, currentLoc.center.lng, data[key].y, data[key].x),
-          center: {
-            lat: data[key].y,
-            lng: data[key].x,
-          },
-          categoryName: data[key].category_name,
-          category: data[key].category_group_name,
-          favorite: false,
-        });
-        setIsLoading(false);
-        setInfo(infoArray);
-      }
-      return info;
-      // info State 초기화 후 키워드 검색 시 infoArray에 저장 후 info State에 저장
+    // const favoriteArr = mapCtx.lists.map((el) => el.id)
+    if (searchResult.keyword !== null || searchResult.address !== null) {
+      setOnCategory(null);
+      const newList = Object.values(data).map((item) => ({
+        id: item.id,
+        address: item.address_name,
+        name: item.place_name,
+        road_name: item.road_address_name,
+        phone: item.phone,
+        roadData: getDistance(
+          currentLoc.center.lat,
+          currentLoc.center.lng,
+          item.y,
+          item.x
+        ),
+        center: {
+          lat: item.y,
+          lng: item.x,
+        },
+        categoryName: item.category_name,
+        category: item.category_group_name,
+        favorite: mapCtx.lists.some(list => list.id === item.id)
+      }));
+      setIsLoading(false);
+      setInfo(newList);
     }
-
     if (onCategory) {
-      for (const key in data) {
-        setSearchResult({
-          location: null,
-          keyword: null,
-        });
-        infoArray.push({
-          id: data[key].id,
-          address: data[key].address_name,
-          name: data[key].place_name,
-          road_name: data[key].road_address_name,
-          phone: data[key].phone,
-          roadData: getDistance(currentLoc.center.lat, currentLoc.center.lng, data[key].y, data[key].x),
-          center: {
-            lat: data[key].y,
-            lng: data[key].x,
-          },
-          categoryName: data[key].category_name,
-          category: data[key].category_group_name,
-          favorite: false,
-        });
-        setIsLoading(false);
-        setInfo(infoArray);
-      }
-      return info;
-      // info State 초기화 후 카테고리 클릭 시 infoArray에 저장 후 info State에 저장
-    }
-
-    if (searchResult.location !== null) {
-      for (const key in data) {
-        setOnCategory(null);
-        infoArray.push({
-          id: data[key].id,
-          type: data[key].address_type,
-          address: data[key].address_name,
-          name: data[key].place_name,
-          road_name: data[key].road_address_name,
-          phone: data[key].phone,
-          roadData: getDistance(currentLoc.center.lat, currentLoc.center.lng, data[key].y, data[key].x),
-          center: {
-            lat: data[key].y,
-            lng: data[key].x,
-          },
-          categoryName: data[key].category_name,
-          category: data[key].category_group_name,
-          favorite: false,
-        });
-        setIsLoading(false);
-        setInfo(infoArray);
-      }
-      return info;
+      const newList = Object.values(data).map((item) => ({
+        id: item.id,
+        address: item.address_name,
+        name: item.place_name,
+        road_name: item.road_address_name,
+        phone: item.phone,
+        roadData: getDistance(
+          currentLoc.center.lat,
+          currentLoc.center.lng,
+          item.y,
+          item.x
+        ),
+        center: {
+          lat: item.y,
+          lng: item.x,
+        },
+        categoryName: item.category_name,
+        category: item.category_group_name,
+        favorite: mapCtx.lists.some(list => list.id === item.id)
+      }));
+      setIsLoading(false);
+      setInfo(newList);
     }
   }; // 리스트에 저장
 
@@ -384,6 +357,11 @@ const KakaoMap = () => {
   // 키워드 검색
   const categorys = new kakao.maps.services.Places();
   // 카테고리 검색
+
+  // useEffect(() => {
+  //   const favoriteArr = mapCtx.lists.map((el) => el.id)
+  //   console.log(info.map((list) => favoriteArr.includes(list.id)))
+  // },[info])
 
   const searchPlace = (page) => {
     const addressOption = {
@@ -415,8 +393,8 @@ const KakaoMap = () => {
       });
     } // 카테고리 검색 (키워드, 콜백함수, 기본옵션, {부드럽게 이동})
 
-    if (searchResult.location !== null) {
-      geocoder.addressSearch(searchResult.location, searchDB, addressOption);
+    if (searchResult.address !== null) {
+      geocoder.addressSearch(searchResult.address, searchDB, addressOption);
       setMarkers((prev) => ({
         ...prev,
         src: allLocation,
@@ -464,9 +442,9 @@ const KakaoMap = () => {
       });
     } // 카테고리 검색 (키워드, 콜백함수, 기본옵션, {부드럽게 이동})
 
-    if (searchResult.location !== null) {
+    if (searchResult.address !== null) {
       geocoder.addressSearch(
-        searchResult.location,
+        searchResult.address,
         updateSearchDB,
         addressOption
       );
@@ -481,7 +459,7 @@ const KakaoMap = () => {
       }));
     }
     // 일반 검색 (키워드, 콜백함수)
-  }, [searchResult.location, searchResult.keyword, onCategory]);
+  }, [searchResult.address, searchResult.keyword, onCategory]);
   // 최초 검색시
 
   const searchDB = (result, status) => {
@@ -493,14 +471,15 @@ const KakaoMap = () => {
           lng: result[0].x,
         },
       }));
+      console.log(result);
       displayMarker([...result]); // marker 생성
       getList([...result]); // list 생성
     }
   };
 
   const updateSearchDB = (result, status, pagination) => {
-    if(status === kakao.maps.services.Status.ZERO_RESULT) {
-      setErrMessage('검색 결과가 없습니다.')
+    if (status === kakao.maps.services.Status.ZERO_RESULT) {
+      setErrMessage("검색 결과가 없습니다.");
       return setOnError(true);
     }
 
@@ -537,8 +516,8 @@ const KakaoMap = () => {
             center: {
               lat: position.coords.latitude, // 위도
               lng: position.coords.longitude, // 경도
-            }
-          }))
+            },
+          }));
         },
         (err) => {
           setLocation((prev) => ({
@@ -565,12 +544,14 @@ const KakaoMap = () => {
       id: data.id,
       name: data.name,
       address: data.address,
-      categoryName: data.categoryName,
       phone: data.phone,
+      roadData: data.roadData,
       center: data.center,
+      category: data.category,
+      categoryName: data.categoryName,
       favorite: true,
     });
-    console.log(mapCtx.lists);
+    
     const changedList = info.map((list) => {
       if (list.id === data.id) {
         return { ...data, favorite: true };
@@ -602,7 +583,7 @@ const KakaoMap = () => {
         <LoadingSpinner />
       ) : (
         <>
-        {onError && <Error onCancel={onCancel} message={errMessage}/>}
+          {onError && <Error onCancel={onCancel} message={errMessage} />}
           <SearchForm
             onSearch={onSearch}
             onKeyword={keyWordHandler}
@@ -614,92 +595,94 @@ const KakaoMap = () => {
               message={`${maxPageCount}개가 검색되었습니다.`}
             />
           )}
-          {isLoading ? <LoadingSpinner/> :
-          <Map // 지도를 표시할 Container
-            id="map"
-            isPanto={location.isPanto}
-            center={location.center}
-            style={{
-              // 지도의 크기
-              width: "100%",
-              minHeight: "calc(100svh - 142px)",
-            }}
-            level={3} // 지도의 확대 레벨
-            onDragEnd={(map) => onDragMap(map)}
-          >
-            <div className={styles.container}>
-              <div
-                onClick={onNowLocation}
-                onMouseOver={onShowHide}
-                onMouseOut={onShowHide}
-                className={styles.nowLocation}
-              >
-                <button></button>
+          {isLoading ? (
+            <LoadingSpinner />
+          ) : (
+            <Map // 지도를 표시할 Container
+              id="map"
+              isPanto={location.isPanto}
+              center={location.center}
+              style={{
+                // 지도의 크기
+                width: "100%",
+                minHeight: "calc(100svh - 142px)",
+              }}
+              level={3} // 지도의 확대 레벨
+              onDragEnd={(map) => onDragMap(map)}
+            >
+              <div className={styles.container}>
+                <div
+                  onClick={onNowLocation}
+                  onMouseOver={onShowHide}
+                  onMouseOut={onShowHide}
+                  className={styles.nowLocation}
+                >
+                  <button></button>
+                </div>
+                {showNow && <span>현재 위치</span>}
               </div>
-              {showNow && <span>현재 위치</span>}
-            </div>
-            {/* 현 위치 버튼 */}
+              {/* 현 위치 버튼 */}
 
-            {positions.map((data) => (
-              <Marker
-                position={data.position}
-                onMarkersHandler={onMarkersHandler.bind(null, data)}
-                onClick={onMarkersHandler.bind(null, data)}
-                onMouseOut={onMouseOut}
-                image={{
-                  src: markers.src,
-                  size: markers.size,
-                }}
-                isOpen={isOpen}
-                name={name && name}
-                saveName={name && name.name}
-                inSertName={data.name}
-                infoPosistion={data.infoPosistion}
-                address={data.address}
-              />
-            ))}
-            {/* 맵 마커 */}
+              {positions.map((data) => (
+                <Marker
+                  position={data.position}
+                  onMarkersHandler={onMarkersHandler.bind(null, data)}
+                  onClick={onMarkersHandler.bind(null, data)}
+                  onMouseOut={onMouseOut}
+                  image={{
+                    src: markers.src,
+                    size: markers.size,
+                  }}
+                  isOpen={isOpen}
+                  name={name && name}
+                  saveName={name && name.name}
+                  inSertName={data.name}
+                  infoPosistion={data.infoPosistion}
+                  address={data.address}
+                />
+              ))}
+              {/* 맵 마커 */}
 
-            {!openList && (
-              <CategoryList
-                openCategory={openCategory}
-                onCategory={onCategoryHandler}
-                resetMarker={displayMarker}
-                resetList={getList}
-              />
-            )}
-            {/* 카테고리 리스트 */}
+              {!openList && (
+                <CategoryList
+                  openCategory={openCategory}
+                  onCategory={onCategoryHandler}
+                  resetMarker={displayMarker}
+                  resetList={getList}
+                />
+              )}
+              {/* 카테고리 리스트 */}
 
-            {!openCategory && !openFavorite && (
-              <SearchList
-                openList={openList}
-                openCategory={openCategory}
-                list={info}
-                onMoveLocation={onMoveLocation}
-                addFavoriteHandler={addFavoriteHandler}
-                pageNum={pageNum}
-                onPageChange={onPageNumHandler}
-                current={currentPage}
-                location={currentLoc.center}
-              />
-            )}
-            {/* 검색 리스트 */}
+              {!openCategory && !openFavorite && (
+                <SearchList
+                  openList={openList}
+                  openCategory={openCategory}
+                  list={info}
+                  onMoveLocation={onMoveLocation}
+                  addFavoriteHandler={addFavoriteHandler}
+                  pageNum={pageNum}
+                  onPageChange={onPageNumHandler}
+                  current={currentPage}
+                  location={currentLoc.center}
+                />
+              )}
+              {/* 검색 리스트 */}
 
-            {!openList && mapCtx.lists.length >= 1 && (
-              <FavoriteList
-                openCategory={openList}
-                openFavorite={openFavorite}
-                list={mapCtx.lists}
-                onMoveLocation={onMoveLocation}
-                removeFavoriteHandler={removeFavoriteHandler}
-              />
-            )}
-            {/* 좋아요 리스트 */}
+              {!openList && mapCtx.lists.length >= 1 && (
+                <FavoriteList
+                  openCategory={openList}
+                  openFavorite={openFavorite}
+                  list={mapCtx.lists}
+                  onMoveLocation={onMoveLocation}
+                  removeFavoriteHandler={removeFavoriteHandler}
+                />
+              )}
+              {/* 좋아요 리스트 */}
 
-            <ZoomControl />
-            {/* 지도 줌 옵션 */}
-          </Map>
-          }
+              <ZoomControl />
+              {/* 지도 줌 옵션 */}
+            </Map>
+          )}
           <MobileNavigation
             openFavorite={openFavorite}
             openList={openList}

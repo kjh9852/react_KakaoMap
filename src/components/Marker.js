@@ -1,3 +1,4 @@
+import React from 'react';
 import { MapMarker, CustomOverlayMap } from "react-kakao-maps-sdk";
 import styles from './Marker.module.css'
 

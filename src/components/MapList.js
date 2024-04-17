@@ -94,4 +94,4 @@ const MapList = (props) => {
   );
 };
 
-export default MapList;
+export default React.memo(MapList);
