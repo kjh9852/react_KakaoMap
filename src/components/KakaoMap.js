@@ -154,7 +154,6 @@ const KakaoMap = () => {
     }
   };
   // 하단 네비게이션 반응
-
   const onCategoryHandler = (data) => {
     setOnCategory(data && data.code);
     setSearchResult({
@@ -177,10 +176,6 @@ const KakaoMap = () => {
         lng: latlng.getLng(),
       },
       isPanto: false,
-    });
-    setSearchResult({
-      location: null,
-      keyword: null,
     });
   };
   // 지도 드래그시 현재 위치 값 변경
@@ -627,7 +622,7 @@ const KakaoMap = () => {
                 <Marker
                   position={data.position}
                   onMarkersHandler={onMarkersHandler.bind(null, data)}
-                  onClick={onMarkersHandler.bind(null, data)}
+                  onTouchStart={onMarkersHandler.bind(null, data)}
                   onMouseOut={onMouseOut}
                   image={{
                     src: markers.src,
