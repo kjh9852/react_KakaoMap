@@ -1,13 +1,13 @@
-import React, { useState, useEffect ,useRef } from "react";
+import React, {useEffect } from "react";
 import ListCard from "../Menu/ListCard";
 import MapList from "../MapList";
-import MapContext from "../../store/map-context";
 import styles from "./SearchList.module.css";
 
 const SearchList = (props) => {
   const activePageNum = props.current;
 
   const list = props.list;
+  console.log(props.list)
 
   if(list.length && list[0].type === "ROAD") {
     list.sort((a,b) => {

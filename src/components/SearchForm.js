@@ -21,14 +21,15 @@ const SearchForm = (props) => {
   // console.log(info);
 
   const token = process.env.REACT_APP_API_KEY;
-
+  
   const response = async (value, url) => {
-     return await fetch(url, {
-      body: JSON.stringify(),
-      headers: {
-        Authorization: `KakaoAK ${token}`,
-      },
-    }).then(async (response) => {
+    try {
+      const response = await fetch(url, {
+        body: JSON.stringify(),
+        headers: {
+          Authorization: `KakaoAK ${token}`,
+        },
+      });
       console.log(response);
       if (!response.ok) {
         throw new Error("Error!");
@@ -38,8 +39,10 @@ const SearchForm = (props) => {
       if (index >= 1) {
         return props.onAddress(value);
       }
-      if(index === 0) return value;
-    });
+      if (index === 0) return value;
+    } catch (error) {
+      throw new Error(error);
+    }
   };
 
   const mapSearchHandler = (enteredInputValue) => {

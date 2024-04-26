@@ -1,11 +1,9 @@
-import React, { useReducer ,useState } from "react";
+import React, { useReducer } from "react";
 
 const MapContext = React.createContext({
   lists: [],
-  addList: (list) => {},
+  addList: () => {},
   removeList: (id) => {},
-  isActive: (id) => {},
-  onFavorite: () => {},
 });
 
 const defaultState = {
@@ -17,23 +15,26 @@ const listReducer = (state, action) => {
 
   if (action.type === "ADD") {
     const existingListIndex = state.lists.findIndex(
-      (list) => list.id === action.list.id
+      (list) => list.id === action.payload.id
     ); // id 값이 같으면 맞는 인덱스 반환 아니면 -1 (action은 현재 누른 값)
     const existingListData = state.lists[existingListIndex];
     // lists에 인덱스 값 삽입
     if(existingListData) { // 중복된 인덱스 일 떄
         updatedLists = [...state.lists];
     } else {
-        updatedLists = state.lists.concat(action.list);
+        updatedLists = state.lists.concat(action.payload);
         // lists 배열에 현재 누른 데이터 삽입
     }
     return {
+      ...state.lists,
       lists: updatedLists,
     };
   }
+
   if (action.type === "REMOVE") {
-    updatedLists = state.lists.filter((list) => list.id !== action.id);
+    updatedLists = state.lists.filter((list) => list.id !== action.payload);
     return {
+      ...state.lists,
       lists: updatedLists,
     };
   }
@@ -41,24 +42,19 @@ const listReducer = (state, action) => {
 
 export const MapContextProvider = (props) => {
   const [listState, dispatchListAction] = useReducer(listReducer, defaultState);
-  const [onFavorite, setOnFavorite] = useState(false);
-  const addListHandler = (list) => {
-    dispatchListAction({ type: "ADD", list: list });
-  };
 
-  const favoriteHanlder = () => {
-    setOnFavorite((prev) => !prev);
+  const addListHandler = (list) => {
+    dispatchListAction({ type: "ADD", payload: list });
   };
 
   const removeListHandler = (id) => {
-    dispatchListAction({ type: "REMOVE", id: id });
+    dispatchListAction({ type: "REMOVE", payload: id });
   };
 
   const listContext = {
     lists: listState.lists,
     addList: addListHandler,
     removeList: removeListHandler,
-    onFavorite: favoriteHanlder,
   };
 
   return (

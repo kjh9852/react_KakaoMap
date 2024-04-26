@@ -10,13 +10,13 @@ const Marker = (props) => {
         onMouseOver={props.onMarkersHandler}
         onTouchStart={props.onTouchStart}
         onMouseOut={props.onMouseOut}
-        position={props.position}
+        position={props.data.position}
         image={props.image}
       />
-      {props.isOpen && props.name && props.saveName === props.inSertName && (
-        <CustomOverlayMap position={props.infoPosistion} yAnchor={2}>
+      {props.isOpen && props.name && props.saveName === props.data.name && (
+        <CustomOverlayMap position={props.data.infoPosistion} yAnchor={2}>
           <div className={styles.markerInfo}>
-            <p>{props.inSertName ? props.inSertName : props.address}</p>
+            <p>{props.data.name ? props.data.name : props.data.address}</p>
           </div>
         </CustomOverlayMap>
       )}

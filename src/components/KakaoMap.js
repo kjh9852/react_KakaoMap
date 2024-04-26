@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext, useMemo, memo } from "react";
+import { useEffect, useState, useContext} from "react";
 import { Map, ZoomControl } from "react-kakao-maps-sdk";
 import useGeolocation from "react-hook-geolocation";
 import MapContext from "../store/map-context";
@@ -264,7 +264,6 @@ const KakaoMap = () => {
   const onPageNumHandler = (page) => {
     setCurrentPage(page);
     searchPlace(page);
-    console.log(page);
   }; // current page 감지
 
   const getList = (data) => {
@@ -303,6 +302,7 @@ const KakaoMap = () => {
         name: item.place_name,
         road_name: item.road_address_name,
         phone: item.phone,
+        type: item.address_type,
         roadData: getDistance(
           currentLoc.center.lat,
           currentLoc.center.lng,
@@ -315,7 +315,7 @@ const KakaoMap = () => {
         },
         categoryName: item.category_name,
         category: item.category_group_name,
-        favorite: mapCtx.lists.some(list => list.id === item.id)
+        favorite: mapCtx.lists.some((list) => list.id === item.id),
       }));
       setIsLoading(false);
       setInfo(newList);
@@ -339,7 +339,7 @@ const KakaoMap = () => {
         },
         categoryName: item.category_name,
         category: item.category_group_name,
-        favorite: mapCtx.lists.some(list => list.id === item.id)
+        favorite: mapCtx.lists.some((list) => list.id === item.id),
       }));
       setIsLoading(false);
       setInfo(newList);
@@ -403,6 +403,7 @@ const KakaoMap = () => {
       size: 15,
       analyze_type: kakao.maps.services.AnalyzeType.EXACT,
     };
+    
     const defaultOptions = {
       x: geolocation.longitude,
       y: geolocation.latitude,
@@ -466,7 +467,6 @@ const KakaoMap = () => {
           lng: result[0].x,
         },
       }));
-      console.log(result);
       displayMarker([...result]); // marker 생성
       getList([...result]); // list 생성
     }
@@ -486,6 +486,7 @@ const KakaoMap = () => {
           lng: result[0].x,
         },
       }));
+      console.log(result);
       displayPagination(pagination);
       displayMarker([...result]); // marker 생성
       getList([...result]); // list 생성
@@ -535,7 +536,7 @@ const KakaoMap = () => {
   // 현재 위치로 초기화
 
   const addFavoriteHandler = (data) => {
-    mapCtx.addList({
+    const updatedLists = {
       id: data.id,
       name: data.name,
       address: data.address,
@@ -545,8 +546,10 @@ const KakaoMap = () => {
       category: data.category,
       categoryName: data.categoryName,
       favorite: true,
-    });
-    
+    };
+
+    mapCtx.addList(updatedLists);
+
     const changedList = info.map((list) => {
       if (list.id === data.id) {
         return { ...data, favorite: true };
@@ -620,20 +623,14 @@ const KakaoMap = () => {
 
               {positions.map((data) => (
                 <Marker
-                  position={data.position}
+                  data={data}
                   onMarkersHandler={onMarkersHandler.bind(null, data)}
                   onTouchStart={onMarkersHandler.bind(null, data)}
                   onMouseOut={onMouseOut}
-                  image={{
-                    src: markers.src,
-                    size: markers.size,
-                  }}
+                  image={markers}
                   isOpen={isOpen}
                   name={name && name}
                   saveName={name && name.name}
-                  inSertName={data.name}
-                  infoPosistion={data.infoPosistion}
-                  address={data.address}
                 />
               ))}
               {/* 맵 마커 */}
