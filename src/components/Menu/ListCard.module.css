@@ -7,7 +7,6 @@
     bottom: 56px;
     border-radius: 10px 10px 0 0;
     border-bottom: 1px solid #ededed;
-    transition: all 1s ease;
     background: #fff;
     z-index: 1;
 }
@@ -15,15 +14,14 @@
     z-index: 20;
 }
 
-.container.open .layout {
-    max-height: 20rem;
-    margin-top: 1.5rem;
-}
 .tabBar {
     position: absolute;
     background: #fff;
     width: 100%;
     height: 24px;
+}
+
+.tabBar.open {
     border-bottom: 1px solid #ededed;
 }
 
@@ -40,11 +38,17 @@
 }
 
 .layout {
-    margin-top: 0;
-    max-height: 0;
+    margin-top: 0rem;
+    max-height: 0rem;
     padding: 0.75rem;
     height: auto;
     overflow: hidden;
     overflow-y: scroll;
+    transition: all .5s ease;
+}
+
+.layout.open {
+    max-height: 20rem;
+    margin-top: 1.5rem;
     transition: all .5s ease;
 }

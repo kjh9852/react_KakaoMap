@@ -1,54 +1,63 @@
-import React, {useEffect } from "react";
-import ListCard from "../Menu/ListCard";
+import React, { useEffect } from "react";
 import MapList from "../MapList";
 import styles from "./SearchList.module.css";
 
-const SearchList = (props) => {
-  const activePageNum = props.current;
-
-  const list = props.list;
-  console.log(props.list)
-
-  if(list.length && list[0].type === "ROAD") {
-    list.sort((a,b) => {
-      return a.roadData > b.roadData ? 1 : -1
-    })
+const SearchList = ({
+  list,
+  current,
+  pageNum,
+  addFavoriteHandler,
+  onMoveLocation,
+  onPageChange,
+}) => {
+  if (list.length && list[0].type === "ROAD") {
+    list.sort((a, b) => {
+      return a.roadData > b.roadData ? 1 : -1;
+    });
   }
 
+  const selectFavoirteList = JSON.stringify(
+    list.map(({ favorite, ...rest }) => rest)
+  );
+
+  console.log(selectFavoirteList);
+
   useEffect(() => {
-    document.getElementById('listSection').scrollTo(0,0);
-  },[activePageNum])
-  
+    const listSetion = document.getElementById("listSection");
+    listSetion.scrollTo(0, 0);
+  }, [current, selectFavoirteList]);
+
   return (
-    <ListCard scroll={props.scroll} openLayout={props.openList}>
+    <>
       {list.map((data) => (
         <MapList
+          key={
+            data.id ? `list-${data.id}` : `road-${data.address + data.roadData}`
+          }
           id={data.id}
           type={data.type ? data.type : ""}
-          onMoveLocaiton={props.onMoveLocation.bind(null, data)}
-          key={data.id}
+          onMoveLocaiton={onMoveLocation.bind(null, data)}
           center={data.center}
           roadData={data.roadData}
           address={data.address}
           name={data.name}
           phone={data.phone}
           category={data.categoryName}
-          toggleHandler={props.addFavoriteHandler.bind(null, data)}
+          toggleHandler={addFavoriteHandler.bind(null, data)}
           favoriteFill={data.favorite ? "#FFF500" : "#ededed"}
-          location={props.location}
         />
       ))}
       <div className={styles.pageNum}>
-        {props.pageNum.map((i) => (
+        {pageNum.map((i) => (
           <span
-            className={`${props.current === i ? styles.on : ""}`}
-            onClick={props.onPageChange.bind(null, i)}
+            className={`${current === i ? styles.on : ""}`}
+            onClick={onPageChange.bind(null, i)}
           >
             {i}
           </span>
         ))}
       </div>
-    </ListCard>
+    </>
   );
 };
 

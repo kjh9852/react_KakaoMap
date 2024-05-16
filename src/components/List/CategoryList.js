@@ -35,9 +35,9 @@ const CategoryList = (props) => {
   ));
 
   return (
-    <ListCard openLayout={props.openCategory}>
+    <>
       <ul className={styles.category}>{list}</ul>
-    </ListCard>
+    </>
   );
 };
 

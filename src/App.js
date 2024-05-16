@@ -1,12 +1,15 @@
-import './App.css';
-import SearchForm from './components/SearchForm';
-import KakaoMap from './components/KakaoMap';
+import "./App.css";
+import KakaoMap from "./components/KakaoMap";
+import ReactMap from "./components/Map";
+import MapTest from "./components/Map02";
+import Main from "./components/Main";
+import SearchForm from "./components/SearchForm";
 
 function App() {
   return (
-    <div className="App">
-      <KakaoMap/>
-    </div>
+    <>
+        <KakaoMap />
+    </>
   );
 }
 

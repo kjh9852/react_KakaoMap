@@ -1,16 +1,17 @@
-import { useState, useRef, useEffect } from "react";
-import MapList from "../MapList";
 import styles from "./ListCard.module.css";
 
-const ListCard = (props) => {
+const ListCard = ({isOpen, children }) => {
 
   return (
-    <div
-      className={`${styles.container} ${props.openLayout ? styles.open : ""}`}
-    >
-      <div className={styles.tabBar}></div>
-      <div id='listSection' className={styles.layout}>
-        {props.children}
+    <div className={`${styles.container}`}>
+      <div
+        className={`${styles.tabBar} ${isOpen ? styles.open : ""}`}
+      ></div>
+      <div
+        id="listSection"
+        className={`${styles.layout} ${isOpen ? styles.open : ""}`}
+      >
+        {children}
       </div>
     </div>
   );

@@ -30,33 +30,34 @@ const menuList = [
 ];
 
 const MobileNavigation = (props) => {
-  const [isActive, setIsActive] = useState("");
+  const [isActive, setIsActive] = useState(null);
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    if(props.openList) {
+    if(props.listState.listOpen && props.list.length > 0) {
       setIsActive(0);
-    } else return;
-    if(props.openFavorite) {
-      setIsActive(1);
-    } else return;
-  },[props.openFavorite, props.openList, isActive]);
+    } 
+    if(props.listState.favoriteOpen && props.favorite.length === 0) {
+      setIsActive(null);
+    }
+  },[props.listState ,props.list, props.favorite]);
+  // 메뉴 버튼 active로 전환
 
   const onActiveHandler = (index) => {
     switch (index) {
       case 0:
-        setIsActive(() => {
-          if (props.list.length > 0) {
-            return index;
-          } else return setError(true);
-        });
+        if (props.list.length > 0) {
+          setIsActive(index);
+        } else {
+          setError(true);
+        }
         break;
       case 1:
-        setIsActive(() => {
-          if (props.favorite.length > 0) {
-            return index;
-          } else return setError(true);
-        });
+        if (props.favorite.length > 0) {
+          setIsActive(index);
+        } else {
+          setError(true);
+        }
         break;
       case 2:
         setIsActive(index);
@@ -65,9 +66,9 @@ const MobileNavigation = (props) => {
         setError(true);
         break;
     }
-
+  
     if (index === isActive) {
-      setIsActive("");
+      setIsActive(null);
     }
     props.onActiveHandler(index);
   };

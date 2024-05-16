@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext} from "react";
+import { useEffect, useState, useContext, useCallback } from "react";
 import { Map, ZoomControl } from "react-kakao-maps-sdk";
 import useGeolocation from "react-hook-geolocation";
 import MapContext from "../store/map-context";
@@ -13,6 +13,8 @@ import Marker from "./Marker";
 import LoadingSpinner from "./UI/LoadingSpinner";
 import SearchCount from "./UI/SearchCount";
 import Error from "./UI/Error";
+import ListContainer from "./List/ListContainer";
+import { calculateDistance } from "./loc";
 
 const KakaoMap = () => {
   const { kakao } = window;
@@ -52,13 +54,14 @@ const KakaoMap = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [positions, setPositions] = useState([]);
   const [name, setName] = useState();
-  const [openList, setOpenList] = useState(false);
-  const [openFavorite, setOpenFavorite] = useState(false);
-  const [openCategory, setOpenCategory] = useState(false);
+  const [listState, setListState] = useState({
+    listOpen: false,
+    favoriteOpen: false,
+    categoryOpen: false,
+  });
   const [showNow, setShowNow] = useState(false);
   const [maxPageCount, setMaxPageCount] = useState("");
-  const [changePageCount, setChangePageCount] = useState(false);
-
+  const [fade, setFade] = useState({ fadeAnimation: "fade_in"});
   const [isLoading, setIsLoading] = useState(false);
   const [mobile, setMobile] = useState();
 
@@ -127,27 +130,37 @@ const KakaoMap = () => {
   const onActiveHandler = (data) => {
     switch (data) {
       case 0:
-        setOpenCategory(false);
-        setOpenFavorite(false);
-        setOpenList((prev) => {
+        setListState((prevList) => {
           if (info.length > 0) {
-            return !prev;
-          } else return;
+            return {
+              listOpen: !prevList.listOpen,
+              favoriteOpen: false,
+              categoryOpen: false,
+            };
+          } else {
+            return prevList;
+          }
         });
         break;
       case 1:
-        setOpenCategory(false);
-        setOpenList(false);
-        setOpenFavorite((prev) => {
-          if (info.length > 0) {
-            return !prev;
-          } else return;
+        setListState((prevList) => {
+          if (mapCtx.lists.length > 0) {
+            return {
+              listOpen: false,
+              favoriteOpen: !prevList.favoriteOpen,
+              categoryOpen: false,
+            };
+          } else {
+            return { favoriteOpen: false };
+          }
         });
         break;
       case 2:
-        setOpenFavorite(false);
-        setOpenList(false);
-        setOpenCategory((prev) => !prev);
+        setListState((prevList) => ({
+          listOpen: false,
+          favoriteOpen: false,
+          categoryOpen: !prevList.categoryOpen,
+        }));
         break;
       default:
         break;
@@ -247,19 +260,11 @@ const KakaoMap = () => {
     setCurrentPage(1);
 
     setMaxPageCount(pagination.totalCount);
-    return;
   }; // 페이지 리스트 생성
 
-  useEffect(() => {
-    setChangePageCount(() => {
-      if (maxPageCount) {
-        setTimeout(() => {
-          setMaxPageCount("");
-        }, [2500]);
-        return true;
-      }
-    });
-  }, [maxPageCount]);
+  const countPageHandler = useCallback(() => {
+    setMaxPageCount(null)
+  },[]);
 
   const onPageNumHandler = (page) => {
     setCurrentPage(page);
@@ -275,25 +280,6 @@ const KakaoMap = () => {
     }
     // list있을시 초기화
 
-    function getDistance(lat1, lng1, lat2, lng2) {
-      function deg2rad(deg) {
-        return deg * (Math.PI / 180);
-      }
-      var R = 6371; // Radius of the earth in km
-      var dLat = deg2rad(lat2 - lat1); // deg2rad below
-      var dLon = deg2rad(lng2 - lng1);
-      var a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(deg2rad(lat1)) *
-          Math.cos(deg2rad(lat2)) *
-          Math.sin(dLon / 2) *
-          Math.sin(dLon / 2);
-      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      var d = R * c; // Distance in km
-      return Math.round(d * 1000) / 1000;
-    }
-
-    // const favoriteArr = mapCtx.lists.map((el) => el.id)
     if (searchResult.keyword !== null || searchResult.address !== null) {
       setOnCategory(null);
       const newList = Object.values(data).map((item) => ({
@@ -303,7 +289,7 @@ const KakaoMap = () => {
         road_name: item.road_address_name,
         phone: item.phone,
         type: item.address_type,
-        roadData: getDistance(
+        roadData: calculateDistance(
           currentLoc.center.lat,
           currentLoc.center.lng,
           item.y,
@@ -327,7 +313,7 @@ const KakaoMap = () => {
         name: item.place_name,
         road_name: item.road_address_name,
         phone: item.phone,
-        roadData: getDistance(
+        roadData: calculateDistance(
           currentLoc.center.lat,
           currentLoc.center.lng,
           item.y,
@@ -352,11 +338,6 @@ const KakaoMap = () => {
   // 키워드 검색
   const categorys = new kakao.maps.services.Places();
   // 카테고리 검색
-
-  // useEffect(() => {
-  //   const favoriteArr = mapCtx.lists.map((el) => el.id)
-  //   console.log(info.map((list) => favoriteArr.includes(list.id)))
-  // },[info])
 
   const searchPlace = (page) => {
     const addressOption = {
@@ -403,7 +384,7 @@ const KakaoMap = () => {
       size: 15,
       analyze_type: kakao.maps.services.AnalyzeType.EXACT,
     };
-    
+
     const defaultOptions = {
       x: geolocation.longitude,
       y: geolocation.latitude,
@@ -420,10 +401,15 @@ const KakaoMap = () => {
         updateSearchDB,
         defaultOptions
       );
-      setOpenList((prev) => {
-        if (prev) {
-          return setOpenList(prev);
-        } else return setOpenList(!prev);
+
+      setListState((prevList) => {
+        if (prevList.listOpen) {
+          return {
+            listOpen: prevList.listOpen,
+            favoriteOpen: false,
+            categoryOpen: false,
+          };
+        } else return { ...prevList, listOpen: !prevList.listOpen };
       });
 
       setMarkers((prev) => ({
@@ -444,11 +430,17 @@ const KakaoMap = () => {
         updateSearchDB,
         addressOption
       );
-      setOpenList((prev) => {
-        if (prev) {
-          return setOpenList(prev);
-        } else return setOpenList(!prev);
+
+      setListState((prevList) => {
+        if (prevList.listOpen) {
+          return {
+            listOpen: prevList.listOpen,
+            favoriteOpen: false,
+            categoryOpen: false,
+          };
+        } else return { ...prevList, listOpen: !prevList.listOpen };
       });
+
       setMarkers((prev) => ({
         ...prev,
         src: allLocation,
@@ -486,7 +478,7 @@ const KakaoMap = () => {
           lng: result[0].x,
         },
       }));
-      console.log(result);
+
       displayPagination(pagination);
       displayMarker([...result]); // marker 생성
       getList([...result]); // list 생성
@@ -587,10 +579,11 @@ const KakaoMap = () => {
             onKeyword={keyWordHandler}
             onAddress={addressHandler}
           />
-          {changePageCount && (
+          {maxPageCount && (
             <SearchCount
-              fade={`${maxPageCount ? styles.fade_in : ""}`}
-              message={`${maxPageCount}개가 검색되었습니다.`}
+              list={info}
+              maxPageCount={maxPageCount}
+              resetCount={countPageHandler}
             />
           )}
           {isLoading ? (
@@ -623,6 +616,7 @@ const KakaoMap = () => {
 
               {positions.map((data) => (
                 <Marker
+                  key={`marker-${data.name}-${data.position.lat},${data.position.lng}`}
                   data={data}
                   onMarkersHandler={onMarkersHandler.bind(null, data)}
                   onTouchStart={onMarkersHandler.bind(null, data)}
@@ -635,49 +629,27 @@ const KakaoMap = () => {
               ))}
               {/* 맵 마커 */}
 
-              {!openList && (
-                <CategoryList
-                  openCategory={openCategory}
-                  onCategory={onCategoryHandler}
-                  resetMarker={displayMarker}
-                  resetList={getList}
-                />
-              )}
-              {/* 카테고리 리스트 */}
-
-              {!openCategory && !openFavorite && (
-                <SearchList
-                  openList={openList}
-                  openCategory={openCategory}
-                  list={info}
-                  onMoveLocation={onMoveLocation}
-                  addFavoriteHandler={addFavoriteHandler}
-                  pageNum={pageNum}
-                  onPageChange={onPageNumHandler}
-                  current={currentPage}
-                  location={currentLoc.center}
-                />
-              )}
-              {/* 검색 리스트 */}
-
-              {!openList && mapCtx.lists.length >= 1 && (
-                <FavoriteList
-                  openCategory={openList}
-                  openFavorite={openFavorite}
-                  list={mapCtx.lists}
-                  onMoveLocation={onMoveLocation}
-                  removeFavoriteHandler={removeFavoriteHandler}
-                />
-              )}
-              {/* 좋아요 리스트 */}
+              <ListContainer
+                listState={listState}
+                list={info}
+                pageNum={pageNum}
+                current={currentPage}
+                onCategory={onCategoryHandler}
+                resetMarker={displayMarker}
+                resetList={getList}
+                onMoveLocation={onMoveLocation}
+                addFavoriteHandler={addFavoriteHandler}
+                removeFavoriteHandler={removeFavoriteHandler}
+                onPageChange={onPageNumHandler}
+              />
+              {/* List 컴포넌트 */}
 
               <ZoomControl />
               {/* 지도 줌 옵션 */}
             </Map>
           )}
           <MobileNavigation
-            openFavorite={openFavorite}
-            openList={openList}
+            listState={listState}
             favorite={mapCtx.lists}
             list={info}
             onActiveHandler={onActiveHandler}

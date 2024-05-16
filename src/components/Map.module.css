@@ -1,6 +1,5 @@
 .container {
     position: absolute;
-    text-align: center;
     top: 18rem;
     right: 35px;
     z-index: 1;
@@ -25,15 +24,4 @@
     background: url(../images/location.png) center no-repeat;
     background-size: 1.125rem;
     cursor: pointer;
-}
-.container span {
-    position: absolute;
-    top: 5px;
-    right: 4px;
-    width: 77px;
-    height: 22px;
-    background: url('../images/select_now.png') no-repeat 3px;
-    background-size: 75px 22px;
-    font-size: 0.875rem;
-    color: #fff;
 }

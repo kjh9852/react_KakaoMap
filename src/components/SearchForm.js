@@ -1,10 +1,10 @@
-import React,{ useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import styles from "./SearchForm.module.css";
 import Error from "./UI/Error";
 
-const SearchForm = (props) => {
+const SearchForm = ({ onAddress, onKeyword }) => {
   const [onError, setOnError] = useState(false);
-  const [errMessage, setErrMessage] = useState('');
+  const [errMessage, setErrMessage] = useState("");
 
   const inputValue = useRef();
 
@@ -13,7 +13,7 @@ const SearchForm = (props) => {
     const enteredInputValue = inputValue.current.value;
     if (enteredInputValue === "") {
       setOnError(true);
-      return setErrMessage('검색어를 입력해주세요.')
+      return setErrMessage("검색어를 입력해주세요.");
     }
     mapSearchHandler(enteredInputValue);
   };
@@ -21,56 +21,51 @@ const SearchForm = (props) => {
   // console.log(info);
 
   const token = process.env.REACT_APP_API_KEY;
-  
-  const response = async (value, url) => {
+
+  const mapSearchHandler = async (inputValue) => {
+    const addressUrl = `https://dapi.kakao.com/v2/local/search/address.json?query=${inputValue}`;
+    const keyWordUrl = `https://dapi.kakao.com/v2/local/search/keyword.json?query=${inputValue}`;
     try {
-      const response = await fetch(url, {
+      let response = await fetch(addressUrl, {
         body: JSON.stringify(),
         headers: {
           Authorization: `KakaoAK ${token}`,
         },
       });
-      console.log(response);
+      const { documents : searchAddress } = await response.json();
+      let addressList = searchAddress.length;
+      if (addressList > 0) {
+        return onAddress(inputValue);
+      } else {
+        response = await fetch(keyWordUrl, {
+          body: JSON.stringify(),
+          headers: {
+            Authorization: `KakaoAK ${token}`,
+          },
+        });
+        const {documents: searchKeyword} = await response.json();
+        if(searchKeyword) {
+          return onKeyword(inputValue);
+        }
+      }
       if (!response.ok) {
         throw new Error("Error!");
       }
-      const { documents } = await response.json();
-      let index = documents.length;
-      if (index >= 1) {
-        return props.onAddress(value);
-      }
-      if (index === 0) return value;
     } catch (error) {
       throw new Error(error);
     }
-  };
-
-  const mapSearchHandler = (enteredInputValue) => {
-    const addressUrl = `https://dapi.kakao.com/v2/local/search/address.json?query=${enteredInputValue}`;
-    const keyWordUrl = `https://dapi.kakao.com/v2/local/search/keyword.json?query=${enteredInputValue}`;
-
-    response(enteredInputValue, addressUrl)
-    .then((data) => {
-      if(!data) {
-        response(enteredInputValue,keyWordUrl)
-      }
-      return data;
-    }).then((data) => {
-      return props.onKeyword(data);
-    }).catch((error) => {
-      setOnError(true);
-      return setErrMessage(error)
-    });
   };
 
   const onCancel = () => {
     setOnError(false);
   };
 
-  const message = <Error onCancel={onCancel} message={errMessage && errMessage}/>
+  const message = (
+    <Error onCancel={onCancel} message={errMessage && errMessage} />
+  );
 
   return (
-    <main className={styles.container}>
+    <div className={styles.container}>
       {onError && message}
       <form onSubmit={submitHandler} className={styles.form}>
         <p>
@@ -82,7 +77,7 @@ const SearchForm = (props) => {
           <button type="submit" />
         </p>
       </form>
-    </main>
+    </div>
   );
 };
 

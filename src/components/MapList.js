@@ -30,7 +30,7 @@ const MapList = (props) => {
     >
       <div className={styles.layout}>
         <div className={styles.list}>
-          <h3 key={props.id}>{props.name}</h3>
+          <h3>{props.name}</h3>
           {props.id && (
             <button className={styles.btn} onClick={props.toggleHandler}>
               <svg
@@ -68,4 +68,4 @@ const MapList = (props) => {
   );
 };
 
-export default React.memo(MapList);
+export default MapList;
