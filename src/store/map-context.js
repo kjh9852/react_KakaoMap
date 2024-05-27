@@ -1,9 +1,11 @@
-import React, { useReducer } from "react";
+import React, { useReducer, useState } from "react";
 
 const MapContext = React.createContext({
   lists: [],
+  sort : null,
   addList: () => {},
   removeList: (id) => {},
+  sortChange: () => {},
 });
 
 const defaultState = {
@@ -42,6 +44,11 @@ const listReducer = (state, action) => {
 
 export const MapContextProvider = (props) => {
   const [listState, dispatchListAction] = useReducer(listReducer, defaultState);
+  const [sortType, setSortType] = useState('default');
+
+  const sortChangeHandler = (type) => {
+    setSortType(type);
+  };
 
   const addListHandler = (list) => {
     dispatchListAction({ type: "ADD", payload: list });
@@ -53,8 +60,10 @@ export const MapContextProvider = (props) => {
 
   const listContext = {
     lists: listState.lists,
+    sort: sortType,
     addList: addListHandler,
     removeList: removeListHandler,
+    sortChange: sortChangeHandler,
   };
 
   return (

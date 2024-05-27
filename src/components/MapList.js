@@ -1,9 +1,8 @@
 import React from "react";
 import styles from "./MapList.module.css";
-import kmIcon from "../images/km_icon.png";
+import kmIcon from "../assets/images/km_icon.png";
 
 const MapList = (props) => {
-
   let listCategory;
   let category = props.category;
 
@@ -24,10 +23,7 @@ const MapList = (props) => {
   if (props.category) changeCategory();
 
   return (
-    <div
-      onClick={props.onMoveLocaiton}
-      className={styles.container}
-    >
+    <div onClick={props.onMoveLocaiton} className={styles.container}>
       <div className={styles.layout}>
         <div className={styles.list}>
           <h3>{props.name}</h3>

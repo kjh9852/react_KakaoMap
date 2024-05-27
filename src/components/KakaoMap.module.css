@@ -1,39 +1,39 @@
 .container {
-    position: absolute;
-    text-align: center;
-    top: 18rem;
-    right: 35px;
-    z-index: 1;
+  position: absolute;
+  text-align: center;
+  top: 18rem;
+  right: 35px;
+  z-index: 1;
 }
 .nowLocation {
-    position: absolute;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    border: 1px solid #ededed;
-    box-shadow: 0px 2px 1px 0px rgba(153, 153, 153, 0.1);
-    background: #fff;
-    border-radius: 5px;
-    cursor: pointer;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid #ededed;
+  box-shadow: 0px 2px 1px 0px rgba(153, 153, 153, 0.1);
+  background: #fff;
+  border-radius: 5px;
+  cursor: pointer;
 }
 .nowLocation button {
-    width: 1.125rem;
-    height: 1.125rem;
-    border: none;
-    background: url(../images/location.png) center no-repeat;
-    background-size: 1.125rem;
-    cursor: pointer;
+  width: 1.125rem;
+  height: 1.125rem;
+  border: none;
+  background: url("../assets/images/location.png") center no-repeat;
+  background-size: 1.125rem;
+  cursor: pointer;
 }
 .container span {
-    position: absolute;
-    top: 5px;
-    right: 4px;
-    width: 77px;
-    height: 22px;
-    background: url('../images/select_now.png') no-repeat 3px;
-    background-size: 75px 22px;
-    font-size: 0.875rem;
-    color: #fff;
+  position: absolute;
+  top: 5px;
+  right: 4px;
+  width: 77px;
+  height: 22px;
+  background: url("../assets/images/select_now.png") no-repeat 3px;
+  background-size: 75px 22px;
+  font-size: 0.875rem;
+  color: #fff;
 }

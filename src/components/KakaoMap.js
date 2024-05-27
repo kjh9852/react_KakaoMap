@@ -5,19 +5,24 @@ import MapContext from "../store/map-context";
 import SearchForm from "./SearchForm";
 import styles from "./KakaoMap.module.css";
 import MobileNavigation from "./Menu/MobileNavigation";
-import FavoriteList from "./List/FavoriteList";
-import SearchList from "./List/SearchList";
-import CategoryList from "./List/CategoryList";
-import allLocation from "../images/allLocaiton.png";
+import allLocation from "../assets/images/allLocaiton.png";
 import Marker from "./Marker";
 import LoadingSpinner from "./UI/LoadingSpinner";
 import SearchCount from "./UI/SearchCount";
 import Error from "./UI/Error";
 import ListContainer from "./List/ListContainer";
-import { calculateDistance } from "./loc";
+import { calculateDistance } from "../util/loc";
 
 const KakaoMap = () => {
   const { kakao } = window;
+
+  const { sort } = useContext(MapContext);
+
+  const sortOption = sort
+    ? kakao.maps.services.SortBy[sort]
+    : kakao.maps.services.SortBy.ACCURACY;
+
+  console.log(sort);
 
   const geolocation = useGeolocation({
     enableHighAccuracy: true, // 가장 높은 정확도의 위치 정보를 수신하고 싶을 때의 불리언 값
@@ -61,7 +66,6 @@ const KakaoMap = () => {
   });
   const [showNow, setShowNow] = useState(false);
   const [maxPageCount, setMaxPageCount] = useState("");
-  const [fade, setFade] = useState({ fadeAnimation: "fade_in"});
   const [isLoading, setIsLoading] = useState(false);
   const [mobile, setMobile] = useState();
 
@@ -263,8 +267,8 @@ const KakaoMap = () => {
   }; // 페이지 리스트 생성
 
   const countPageHandler = useCallback(() => {
-    setMaxPageCount(null)
-  },[]);
+    setMaxPageCount(null);
+  }, []);
 
   const onPageNumHandler = (page) => {
     setCurrentPage(page);
@@ -348,10 +352,9 @@ const KakaoMap = () => {
     const defaultOptions = {
       x: geolocation.longitude,
       y: geolocation.latitude,
-      radius: 5000,
       page: page || 1,
       size: 15,
-      sort: kakao.maps.services.SortBy.DISTANCE,
+      sort: sortOption,
     };
     // 검색 시 default 옵션(현재 위치 기반)
 
@@ -388,10 +391,9 @@ const KakaoMap = () => {
     const defaultOptions = {
       x: geolocation.longitude,
       y: geolocation.latitude,
-      radius: 5000,
       page: 1,
       size: 15,
-      sort: kakao.maps.services.SortBy.DISTANCE,
+      sort: sortOption,
     };
     // 검색 시 default 옵션(현재 위치 기반)
 
@@ -447,7 +449,7 @@ const KakaoMap = () => {
       }));
     }
     // 일반 검색 (키워드, 콜백함수)
-  }, [searchResult.address, searchResult.keyword, onCategory]);
+  }, [searchResult.address, searchResult.keyword, onCategory, sort]);
   // 최초 검색시
 
   const searchDB = (result, status) => {
@@ -478,14 +480,14 @@ const KakaoMap = () => {
           lng: result[0].x,
         },
       }));
-
+      console.log(result);
       displayPagination(pagination);
       displayMarker([...result]); // marker 생성
       getList([...result]); // list 생성
       return setOnError(false);
     }
   };
-
+  console.log(searchResult);
   useEffect(() => {
     //최초 현재 위치로 초기화
     if (navigator.geolocation) {

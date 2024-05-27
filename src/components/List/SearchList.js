@@ -1,5 +1,7 @@
-import React, { useEffect } from "react";
+import React, {useEffect, useContext} from "react";
+import MapContext from "../../store/map-context";
 import MapList from "../MapList";
+import SortButton from "../UI/SortButton";
 import styles from "./SearchList.module.css";
 
 const SearchList = ({
@@ -15,12 +17,15 @@ const SearchList = ({
       return a.roadData > b.roadData ? 1 : -1;
     });
   }
+  const {sortChange} = useContext(MapContext);
+
+  const handleSortChange = (type) => {
+    sortChange(type);
+  };
 
   const selectFavoirteList = JSON.stringify(
     list.map(({ favorite, ...rest }) => rest)
   );
-
-  console.log(selectFavoirteList);
 
   useEffect(() => {
     const listSetion = document.getElementById("listSection");
@@ -29,6 +34,10 @@ const SearchList = ({
 
   return (
     <>
+    <div className={styles.sortAction}>
+      <SortButton onSortChange={handleSortChange} sortType="ACCURACY" btnName="정확도순" />
+      <SortButton onSortChange={handleSortChange} sortType="DISTANCE" btnName="거리순" />
+    </div>
       {list.map((data) => (
         <MapList
           key={

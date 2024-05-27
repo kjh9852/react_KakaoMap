@@ -35,7 +35,7 @@ const SearchForm = ({ onAddress, onKeyword }) => {
       const { documents : searchAddress } = await response.json();
       let addressList = searchAddress.length;
       if (addressList > 0) {
-        return onAddress(inputValue);
+          onAddress(inputValue);
       } else {
         response = await fetch(keyWordUrl, {
           body: JSON.stringify(),
@@ -44,8 +44,9 @@ const SearchForm = ({ onAddress, onKeyword }) => {
           },
         });
         const {documents: searchKeyword} = await response.json();
+        console.log(searchKeyword);
         if(searchKeyword) {
-          return onKeyword(inputValue);
+          onKeyword(inputValue);
         }
       }
       if (!response.ok) {

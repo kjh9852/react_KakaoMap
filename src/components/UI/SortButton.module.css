@@ -1,0 +1,13 @@
+.btn {
+    padding: 0.5rem 0.625rem;
+    background: #ededed;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all .3s ease;
+}
+.active {
+    background: #0085FF;
+    color: #fff;
+}

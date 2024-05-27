@@ -13,3 +13,14 @@
     color: #5500ff;
     font-weight: 500;
 }
+.sortAction {
+    display: flex;
+    justify-content: flex-start;
+    padding-bottom: 0.75rem;
+}
+.sortAction > button {
+    margin-right: 0.625rem;
+}
+.sortAction > button:last-child {
+    margin-right: 0;
+}
