@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/react_kakaomap/static/css/main.7603280d.css",
-    "main.js": "/react_kakaomap/static/js/main.988231ae.js",
+    "main.js": "/react_kakaomap/static/js/main.72e5b01c.js",
     "index.html": "/react_kakaomap/index.html",
     "main.7603280d.css.map": "/react_kakaomap/static/css/main.7603280d.css.map",
-    "main.988231ae.js.map": "/react_kakaomap/static/js/main.988231ae.js.map"
+    "main.72e5b01c.js.map": "/react_kakaomap/static/js/main.72e5b01c.js.map"
   },
   "entrypoints": [
     "static/css/main.7603280d.css",
-    "static/js/main.988231ae.js"
+    "static/js/main.72e5b01c.js"
   ]
 }
