@@ -6,6 +6,7 @@ import SearchForm from "./SearchForm";
 import styles from "./KakaoMap.module.css";
 import MobileNavigation from "./Menu/MobileNavigation";
 import allLocation from "../assets/images/allLocaiton.png";
+import myLocationMarker from "../assets/images/my_location_marker.png";
 import Marker from "./Marker";
 import LoadingSpinner from "./UI/LoadingSpinner";
 import SearchCount from "./UI/SearchCount";
@@ -21,8 +22,6 @@ const KakaoMap = () => {
   const sortOption = sort
     ? kakao.maps.services.SortBy[sort]
     : kakao.maps.services.SortBy.ACCURACY;
-
-  console.log(sort);
 
   const geolocation = useGeolocation({
     enableHighAccuracy: true, // 가장 높은 정확도의 위치 정보를 수신하고 싶을 때의 불리언 값
@@ -64,6 +63,7 @@ const KakaoMap = () => {
     favoriteOpen: false,
     categoryOpen: false,
   });
+
   const [showNow, setShowNow] = useState(false);
   const [maxPageCount, setMaxPageCount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -87,6 +87,21 @@ const KakaoMap = () => {
     },
   });
 
+  const [myMarkerImg, setMyMarkerImg] = useState({
+    src: myLocationMarker,
+    size: {
+      width: 25,
+      height: 25,
+    },
+  });
+
+  const [myMarker, setMyMarker] = useState({
+    position: {
+      lat: null,
+      lng: null,
+    },
+  });
+  console.log(myMarker !== null);
   const addressHandler = (value) => {
     setSearchResult({
       keyword: null,
@@ -205,6 +220,14 @@ const KakaoMap = () => {
       },
     }));
 
+    setMyMarker((prev) => ({
+      ...prev,
+      position: {
+        lat: geolocation.latitude,
+        lng: geolocation.longitude,
+      },
+    }));
+
     setLocation((prev) => ({
       ...prev,
       center: {
@@ -213,6 +236,7 @@ const KakaoMap = () => {
       },
       isPanto: true,
     }));
+
     setShowNow(true);
   };
   // 현재 위치 값 저장
@@ -242,10 +266,6 @@ const KakaoMap = () => {
     for (let i = 0; i < data.length; i++) {
       markers.push({
         position: {
-          lat: data[i].y,
-          lng: data[i].x,
-        },
-        infoPosistion: {
           lat: data[i].y,
           lng: data[i].x,
         },
@@ -629,6 +649,7 @@ const KakaoMap = () => {
                   saveName={name && name.name}
                 />
               ))}
+              <Marker data={myMarker} image={myMarkerImg} />
               {/* 맵 마커 */}
 
               <ListContainer

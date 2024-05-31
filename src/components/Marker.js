@@ -1,22 +1,32 @@
-import React from 'react';
+import React from "react";
 import { MapMarker, CustomOverlayMap } from "react-kakao-maps-sdk";
-import styles from './Marker.module.css'
+import styles from "./Marker.module.css";
 
-const Marker = (props) => {
+const Marker = ({
+  onMarkersHandler,
+  onMouseOut,
+  onTouchStart,
+  data,
+  image,
+  isOpen,
+  name,
+  saveName,
+}) => {
+  console.log(data);
   return (
     <>
       <MapMarker
         className={styles.markerInfo}
-        onMouseOver={props.onMarkersHandler}
-        onTouchStart={props.onTouchStart}
-        onMouseOut={props.onMouseOut}
-        position={props.data.position}
-        image={props.image}
+        onMouseOver={onMarkersHandler && onMarkersHandler}
+        onTouchStart={onTouchStart && onTouchStart}
+        onMouseOut={onMouseOut && onMouseOut}
+        position={data && data.position}
+        image={image && image}
       />
-      {props.isOpen && props.name && props.saveName === props.data.name && (
-        <CustomOverlayMap position={props.data.infoPosistion} yAnchor={2}>
+      {isOpen && name && saveName === data.name && (
+        <CustomOverlayMap position={data.position} yAnchor={2}>
           <div className={styles.markerInfo}>
-            <p>{props.data.name ? props.data.name : props.data.address}</p>
+            <p>{data.name ? data.name : data.address}</p>
           </div>
         </CustomOverlayMap>
       )}
